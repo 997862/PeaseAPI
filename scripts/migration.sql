@@ -1,0 +1,17 @@
+-- Token IP 限制
+ALTER TABLE tokens ADD COLUMN IF NOT EXISTS ip_limit TEXT DEFAULT '';
+
+-- 系统访问令牌表
+CREATE TABLE IF NOT EXISTS system_tokens (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(128) NOT NULL UNIQUE,
+    name VARCHAR(128) NOT NULL DEFAULT '',
+    role SMALLINT NOT NULL DEFAULT 2,
+    user_id INTEGER DEFAULT NULL,
+    status SMALLINT NOT NULL DEFAULT 1,
+    created_at BIGINT NOT NULL DEFAULT 0,
+    expires_at BIGINT DEFAULT 0
+);
+
+-- 计费报表
+ALTER TABLE logs ADD COLUMN IF NOT EXISTS request_id VARCHAR(64) DEFAULT '';

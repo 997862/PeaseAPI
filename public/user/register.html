@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - PeaseAPI</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/vue/3.4.21/vue.global.prod.js"></script>
+    <script src="https://cdn.staticfile.org/axios/1.6.8/axios.min.js"></script>
+    <link href="https://fonts.font.im/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+        [v-cloak] { display: none; }
+        .gradient-text { background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .bp { background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; border: none; cursor: pointer; }
+        .bp:hover { background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%); }
+        .bp:disabled { opacity: 0.5; cursor: not-allowed; }
+        .inp { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; box-sizing: border-box; }
+        .inp:focus { outline: none; border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+        .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .toast { position: fixed; top: 1rem; right: 1rem; background: white; border-radius: 0.75rem; padding: 1rem 1.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 100; animation: si 0.3s ease-out; }
+        @keyframes si { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .ts { border-left: 4px solid #10B981; }
+        .te { border-left: 4px solid #EF4444; }
+        .phone-row { display: flex; gap: 0.5rem; }
+        .phone-row .inp { flex: 1; }
+        .phone-row .btn-sms { white-space: nowrap; padding: 0.75rem 1rem; }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#6366F1">
+</head>
+<body class="bg-gray-50 text-gray-900">
+<div id="app" v-cloak>
+    <nav class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center space-x-3">
+                    <img src="/logo-40.png" alt="PeaseAPI Logo" style="width:40px;height:40px;">
+                    <span class="text-xl font-bold gradient-text">PeaseAPI</span>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-indigo-600 transition">首页</a>
+                    <a href="/user/login" class="text-sm text-gray-500 hover:text-gray-700">已有账号？登录</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="card w-full max-w-md p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">注册账号</h2>
+                <p class="text-gray-500 mt-2">创建您的 PeaseAPI 账号</p>
+            </div>
+            <form @submit.prevent="doReg">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">用户名</label>
+                    <input v-model="rf.username" type="text" class="inp" maxlength="20" required autofocus placeholder="3-20个字符，仅字母数字下划线">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">密码</label>
+                    <input v-model="rf.password" type="password" class="inp" minlength="8" required placeholder="至少 8 个字符">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">邮箱 <span class="text-red-500">*</span></label>
+                    <input v-model="rf.email" type="email" class="inp" required placeholder="用于登录和找回密码">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-2">手机号 <span class="text-gray-400 text-xs">（选填）</span></label>
+                    <div class="phone-row">
+                        <input v-model="rf.phone" type="text" class="inp" placeholder="11位手机号" maxlength="11">
+                        <button v-if="smsEnabled" type="button" @click="sendSms" :disabled="smsCountdown > 0 || !isValidPhone" class="bp btn-sms">
+                            <span v-if="smsCountdown > 0">{{ smsCountdown }}s</span>
+                            <span v-else>获取验证码</span>
+                        </button>
+                    </div>
+                    <div v-if="smsEnabled && rf.phone" class="mt-2">
+                        <input v-model="rf.smsCode" type="text" class="inp" placeholder="短信验证码" maxlength="6">
+                    </div>
+                </div>
+                <button type="submit" :disabled="loading" class="w-full bp py-3">
+                    <span v-if="loading">注册中...</span>
+                    <span v-else>注册</span>
+                </button>
+                <div class="mt-4 text-center text-sm text-gray-500">
+                    已有账号？<a href="/user/login" class="text-indigo-600 hover:underline font-medium">立即登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div v-if="toast.show" class="toast" :class="toast.type==='success'?'ts':'te'">
+        <p>{{ toast.message }}</p>
+    </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+const api = axios.create({ withCredentials: true, baseURL: '/api' });
+
+createApp({
+    data() {
+        return {
+            rf: { username: '', password: '', email: '', phone: '', smsCode: '' },
+            loading: false,
+            smsEnabled: false,
+            smsCountdown: 0,
+            smsTimer: null,
+            toast: { show: false, message: '', type: 'success' }
+        }
+    },
+    computed: {
+        isValidPhone() {
+            return /^1[3-9]\d{9}$/.test(this.rf.phone);
+        }
+    },
+    mounted() {
+        this.checkSmsStatus();
+    },
+    beforeUnmount() {
+        if (this.smsTimer) clearInterval(this.smsTimer);
+    },
+    methods: {
+        msg(m, t = 'success') { this.toast = { show: true, message: m, type: t }; setTimeout(() => this.toast.show = false, 3000); },
+        async checkSmsStatus() {
+            try {
+                const r = await api.get('/sms/status');
+                if (r.data.success) this.smsEnabled = r.data.data.enabled;
+            } catch(e) {}
+        },
+        async sendSms() {
+            if (!this.isValidPhone) { this.msg('请输入正确的手机号', 'error'); return; }
+            try {
+                const r = await api.post('/sms/send-code', { phone: this.rf.phone, type: 'register' });
+                if (r.data.success) {
+                    this.msg('验证码已发送');
+                    this.smsCountdown = 60;
+                    this.smsTimer = setInterval(() => {
+                        this.smsCountdown--;
+                        if (this.smsCountdown <= 0) clearInterval(this.smsTimer);
+                    }, 1000);
+                }
+            } catch (e) { this.msg(e.response?.data?.message || '发送失败', 'error'); }
+        },
+        async doReg() {
+            this.loading = true;
+            try {
+                const body = {
+                    username: this.rf.username,
+                    password: this.rf.password,
+                    email: this.rf.email,
+                };
+                if (this.rf.phone) {
+                    body.phone = this.rf.phone;
+                    if (this.smsEnabled && !this.rf.smsCode) {
+                        this.msg('请输入短信验证码', 'error');
+                        this.loading = false;
+                        return;
+                    }
+                    if (this.smsEnabled) body.sms_code = this.rf.smsCode;
+                }
+                const r = await api.post('/user/register', body);
+                if (r.data.success) {
+                    this.msg('注册成功，正在跳转到登录...');
+                    setTimeout(() => { window.location.href = '/user/login'; }, 1000);
+                }
+            } catch (e) { this.msg(e.response?.data?.message || '注册失败', 'error'); }
+            this.loading = false;
+        }
+    }
+}).mount('#app');
+</script>
+</body>
+</html>

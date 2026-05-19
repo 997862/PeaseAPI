@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  peaseapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: peaseapi
+    restart: always
+    ports:
+      - "3000:80"
+    environment:
+      - DB_TYPE=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=peaseapi
+      - DB_USERNAME=peaseapi
+      - DB_PASSWORD=peaseapi_password
+      - SESSION_SECRET=change_this_to_a_random_string
+      - CRYPTO_SECRET=change_this_to_a_random_string
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - peaseapi_net
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: peaseapi-db
+    restart: always
+    environment:
+      - POSTGRES_DB=peaseapi
+      - POSTGRES_USER=peaseapi
+      - POSTGRES_PASSWORD=peaseapi_password
+    volumes:
+      - peaseapi_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U peaseapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - peaseapi_net
+
+volumes:
+  peaseapi_data:
+
+networks:
+  peaseapi_net:
+    driver: bridge

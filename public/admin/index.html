@@ -175,12 +175,12 @@
                 <a v-if="isAdmin" @click="go('mail')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='mail'}"><span class="text-xl mr-4">📧</span><span class="font-medium">邮件配置</span></a>
                 <a v-if="isAdmin" @click="go('mailTemplates')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='mailTemplates'}"><span class="text-xl mr-4">📨</span><span class="font-medium">邮件模板</span></a>
                 <div class="px-4 mt-4 mb-2"><p class="text-xs font-semibold text-gray-400 uppercase">扩展</p></div>
-                <a v-if="isAdmin" @click="go('oauth')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='oauth'}"><span class="text-xl mr-4">🔗</span><span class="font-medium">OAuth 登录</span></a>
-                <a v-if="isAdmin" @click="go('roles')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='roles'}"><span class="text-xl mr-4">👑</span><span class="font-medium">角色权限</span></a>
-                <a v-if="isAdmin" @click="go('groups')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='groups'}"><span class="text-xl mr-4">👥</span><span class="font-medium">用户分组</span></a>
-                <a v-if="isAdmin" @click="go('invite')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='invite'}"><span class="text-xl mr-4">🎁</span><span class="font-medium">邀请返利</span></a>
-                <a v-if="isAdmin" @click="go('nodes')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='nodes'}"><span class="text-xl mr-4">🌐</span><span class="font-medium">多节点</span></a>
-                <a v-if="isAdmin" @click="go('docker')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='docker'}"><span class="text-xl mr-4">🐳</span><span class="font-medium">Docker</span></a>
+                <a @click="go('oauth')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='oauth'}"><span class="text-xl mr-4">🔗</span><span class="font-medium">OAuth 登录</span></a>
+                <a @click="go('roles')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='roles'}"><span class="text-xl mr-4">👑</span><span class="font-medium">角色权限</span></a>
+                <a @click="go('groups')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='groups'}"><span class="text-xl mr-4">👥</span><span class="font-medium">用户分组</span></a>
+                <a @click="go('invite')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='invite'}"><span class="text-xl mr-4">🎁</span><span class="font-medium">邀请返利</span></a>
+                <a @click="go('nodes')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='nodes'}"><span class="text-xl mr-4">🌐</span><span class="font-medium">多节点</span></a>
+                <a @click="go('docker')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='docker'}"><span class="text-xl mr-4">🐳</span><span class="font-medium">Docker</span></a>
                 <a @click="go('myprofile')" class="si flex items-center px-6 py-3 text-gray-700" :class="{act:pg==='myprofile'}"><span class="text-xl mr-4">👤</span><span class="font-medium">个人设置</span></a>
             </nav>
             <div class="p-5 border-t bg-gray-50">
@@ -1101,6 +1101,7 @@ createApp({
             else if (p === 'groups') this.loadGroups();
             else if (p === 'invite') this.loadInviteData();
             else if (p === 'nodes') this.loadNodes();
+            else if (p === 'docker') { /* No load needed, static content */ }
             else if (p === 'myprofile') {
                 this.req('/api/user/self').then(r => {
                     if (r) { this.pf.display_name = r.display_name || ''; this.pf.email = r.email || ''; }

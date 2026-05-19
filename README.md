@@ -180,6 +180,12 @@ location / { try_files $uri $uri/ /admin/index.html; }
 
 欢迎提交 Issue 和 Pull Request！
 
+## 💬 交流与反馈
+
+- **QQ 交流群**：`10662299`
+- **问题反馈**：GitHub Issues
+- **商务合作**：联系群主或发送邮件至 admin@peaseapi.com
+
 ## 📄 许可证
 
 MIT License

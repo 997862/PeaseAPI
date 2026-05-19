@@ -1,0 +1,12 @@
+.env
+.env.local
+.env.*.local
+*.log
+*.pid
+storage/logs/*
+vendor/
+node_modules/
+composer.lock
+.DS_Store
+Thumbs.db
+.gitignore~

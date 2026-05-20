@@ -119,6 +119,24 @@ export const logAPI = {
   list: (params) => api.get('/api/log', { params }),
   stat: (params) => api.get('/api/log/stat', { params }),
   search: (params) => api.get('/api/log/search', { params }),
+  // API call logs
+  getCalls: (params) => api.get('/api/logs/calls', { params }),
+  // Login logs
+  getLogin: (params) => api.get('/api/logs/login', { params }),
+  // Admin operation logs
+  getAdmin: (params) => api.get('/api/logs/admin', { params }),
+}
+
+// ==========================================
+// Mail Template APIs
+// ==========================================
+export const mailAPI = {
+  list: (params) => api.get('/api/mail/templates', { params }),
+  get: (id) => api.get(`/api/mail/templates/${id}`),
+  update: (id, data) => api.put(`/api/mail/templates/${id}`, data),
+  test: (id, data) => api.post(`/api/mail/templates/${id}/test`, data),
+  create: (data) => api.post('/api/mail/templates', data),
+  delete: (id) => api.delete(`/api/mail/templates/${id}`),
 }
 
 export default api

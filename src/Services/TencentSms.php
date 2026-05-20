@@ -14,12 +14,19 @@ class TencentSms
     private string $signName;
     private string $endpoint = 'sms.tencentcloudapi.com';
 
-    public function __construct()
+    public function __construct(?array $config = null)
     {
-        $this->secretId = $_ENV['SMS_TENCENT_SECRET_ID'] ?? '';
-        $this->secretKey = $_ENV['SMS_TENCENT_SECRET_KEY'] ?? '';
-        $this->sdkAppId = $_ENV['SMS_TENCENT_SDK_APP_ID'] ?? '';
-        $this->signName = $_ENV['SMS_TENCENT_SIGN_NAME'] ?? '';
+        if ($config !== null) {
+            $this->secretId = $config['SmsTencentSecretId'] ?? '';
+            $this->secretKey = $config['SmsTencentSecretKey'] ?? '';
+            $this->sdkAppId = $config['SmsTencentSdkAppId'] ?? '';
+            $this->signName = $config['SmsTencentSignName'] ?? '';
+        } else {
+            $this->secretId = $_ENV['SMS_TENCENT_SECRET_ID'] ?? \NewApi\Models\Option::get('SmsTencentSecretId', '');
+            $this->secretKey = $_ENV['SMS_TENCENT_SECRET_KEY'] ?? \NewApi\Models\Option::get('SmsTencentSecretKey', '');
+            $this->sdkAppId = $_ENV['SMS_TENCENT_SDK_APP_ID'] ?? \NewApi\Models\Option::get('SmsTencentSdkAppId', '');
+            $this->signName = $_ENV['SMS_TENCENT_SIGN_NAME'] ?? \NewApi\Models\Option::get('SmsTencentSignName', '');
+        }
     }
 
     /**

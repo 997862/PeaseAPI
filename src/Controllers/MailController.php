@@ -138,7 +138,7 @@ class MailController
         $perPage = (int)$request->input('per_page', 20);
         $search = $request->input('search', '');
 
-        $result = MailTemplate::paginate($page, $perPage, $search);
+        $result = MailTemplate::searchPaginate($page, $perPage, $search);
         return Response::success($result);
     }
 

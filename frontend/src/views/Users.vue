@@ -1,13 +1,13 @@
 <template>
   <div class="space-y-6">
     <!-- Page header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
         <h2 class="text-xl font-bold text-gray-900">用户管理</h2>
         <p class="mt-1 text-sm text-gray-500">管理系统中的所有用户账号</p>
       </div>
       <button
-        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 transition"
+        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 transition shrink-0"
         @click="showCreateModal = true"
       >
         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -19,19 +19,22 @@
 
     <!-- Filters -->
     <div class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
-      <div class="flex flex-col sm:flex-row gap-3">
-        <div class="flex-1">
+      <div class="flex flex-wrap items-center gap-3">
+        <div class="relative flex-1 min-w-[240px]">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
           <input
             v-model="searchKeyword"
             type="text"
             placeholder="搜索用户名、邮箱或显示名称..."
-            class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+            class="w-full rounded-lg border border-gray-300 pl-9 pr-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
             @keyup.enter="loadUsers"
           />
         </div>
         <select
           v-model="filterStatus"
-          class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+          class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none whitespace-nowrap"
           @change="loadUsers"
         >
           <option value="">全部状态</option>
@@ -42,7 +45,7 @@
         </select>
         <select
           v-model="filterRole"
-          class="rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none"
+          class="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none whitespace-nowrap"
           @change="loadUsers"
         >
           <option value="">全部角色</option>
@@ -51,7 +54,7 @@
           <option value="100">Root</option>
         </select>
         <button
-          class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition"
+          class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 transition whitespace-nowrap"
           @click="loadUsers"
         >
           搜索

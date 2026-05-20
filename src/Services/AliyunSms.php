@@ -13,12 +13,18 @@ class AliyunSms
     private string $signName;
     private string $endpoint;
 
-    public function __construct()
+    public function __construct(?array $config = null)
     {
-        $this->accessKeyId = $_ENV['SMS_ALIYUN_ACCESS_KEY_ID'] ?? '';
-        $this->accessKeySecret = $_ENV['SMS_ALIYUN_ACCESS_KEY_SECRET'] ?? '';
-        $this->signName = $_ENV['SMS_ALIYUN_SIGN_NAME'] ?? '';
-        $this->endpoint = $_ENV['SMS_ALIYUN_ENDPOINT'] ?? 'dysmsapi.aliyuncs.com';
+        if ($config !== null) {
+            $this->accessKeyId = $config['SmsAliyunAccessKeyId'] ?? '';
+            $this->accessKeySecret = $config['SmsAliyunAccessKeySecret'] ?? '';
+            $this->signName = $config['SmsAliyunSignName'] ?? '';
+        } else {
+            $this->accessKeyId = $_ENV['SMS_ALIYUN_ACCESS_KEY_ID'] ?? \NewApi\Models\Option::get('SmsAliyunAccessKeyId', '');
+            $this->accessKeySecret = $_ENV['SMS_ALIYUN_ACCESS_KEY_SECRET'] ?? \NewApi\Models\Option::get('SmsAliyunAccessKeySecret', '');
+            $this->signName = $_ENV['SMS_ALIYUN_SIGN_NAME'] ?? \NewApi\Models\Option::get('SmsAliyunSignName', '');
+        }
+        $this->endpoint = $_ENV['SMS_ALIYUN_ENDPOINT'] ?? \NewApi\Models\Option::get('SmsAliyunEndpoint', 'dysmsapi.aliyuncs.com');
     }
 
     /**

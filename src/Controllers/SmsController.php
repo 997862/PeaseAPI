@@ -122,8 +122,6 @@ class SmsController
         }
         return ['success' => false, 'message' => '未知服务商'];
     }
-
-    // IP 限制检查
     private function checkIpLimit(string $ip): bool
     {
         $limitMax = (int)Option::get('SmsIpHourlyLimit', 50);

@@ -65,6 +65,15 @@ class Request
         return $this->body[$key] ?? $default;
     }
 
+    /**
+     * Get all input data from the request body.
+     * Similar to Laravel's $request->all()
+     */
+    public function all(): array
+    {
+        return $this->body;
+    }
+
     public function query(string $key, mixed $default = null): mixed
     {
         return $this->query[$key] ?? $default;

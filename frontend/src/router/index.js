@@ -55,6 +55,12 @@ const routes = [
         component: () => import('@/views/Settings.vue'),
         meta: { title: '系统设置', requiresAdmin: true },
       },
+      {
+        path: 'mail-templates',
+        name: 'MailTemplates',
+        component: () => import('@/views/MailTemplates.vue'),
+        meta: { title: '邮件模板', requiresAdmin: true },
+      },
     ],
   },
 ]
@@ -64,7 +70,6 @@ const router = createRouter({
   routes,
 })
 
-// Navigation guard
 router.beforeEach((to, from, next) => {
   const { initAuth, isLoggedIn, isAdmin } = useAuth()
   initAuth()
@@ -80,7 +85,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.title) {
-    document.title = `${to.meta.title} - PeaseAI 管理平台`
+    document.title = `${to.meta.title} - PeaseAPI 管理平台`
   }
 
   next()

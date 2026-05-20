@@ -1,210 +1,189 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-
-// Load .env manually (since we're running from CLI script)
+// Manual .env loading
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-    $dotenv->load();
-}
-
-use NewApi\Models\Option;
-
-// Create mail_templates table if not exists
-try {
-    $db = \NewApi\Database\Connection::getInstance();
-    
-    // Check if table exists
-    $stmt = $db->query("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'mail_templates')");
-    $exists = $stmt->fetchColumn();
-    echo "mail_templates exists: " . ($exists ? 'YES' : 'NO') . "\n";
-    
-    if (!$exists) {
-        echo "Creating mail_templates table...\n";
-        
-        $db->exec("
-            CREATE TABLE mail_templates (
-                id SERIAL PRIMARY KEY,
-                slug VARCHAR(100) NOT NULL UNIQUE,
-                name VARCHAR(200) NOT NULL,
-                subject VARCHAR(300) NOT NULL,
-                content TEXT NOT NULL,
-                description TEXT,
-                variables TEXT, -- JSON array of available variables
-                is_active BOOLEAN DEFAULT TRUE,
-                is_system BOOLEAN DEFAULT FALSE, -- System templates cannot be deleted
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        ");
-        
-        echo "Table created successfully\n";
-        
-        // Insert default templates
-        $templates = [
-            [
-                'email_verification',
-                '邮箱验证',
-                '请验证您的邮箱地址 - {site_name}',
-                '<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
-<tr><td style="padding:40px 0;text-align:center;background:#6366F1;border-radius:12px 12px 0 0;">
-<h1 style="color:#fff;margin:0;font-size:24px;">🫛 {site_name}</h1>
-</td></tr>
-<tr><td style="background:#fff;padding:40px 30px;">
-<h2 style="color:#333;margin:0 0 20px;font-size:20px;">验证您的邮箱</h2>
-<p style="color:#666;line-height:1.6;margin:0 0 20px;">你好，{username}！</p>
-<p style="color:#666;line-height:1.6;margin:0 0 30px;">请点击下方按钮验证您的邮箱地址，该链接将在 <strong>24 小时</strong>内有效。</p>
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="text-align:center;padding:20px 0;">
-<a href="{verify_url}" style="background:#6366F1;color:#fff;padding:14px 40px;text-decoration:none;border-radius:8px;font-size:16px;font-weight:500;display:inline-block;">验证邮箱</a>
-</td></tr>
-</table>
-<p style="color:#999;font-size:12px;line-height:1.6;margin:20px 0 0;">如果按钮无法点击，请复制以下链接到浏览器打开：</p>
-<p style="color:#6366F1;font-size:12px;word-break:break-all;margin:5px 0 0;">{verify_url}</p>
-</td></tr>
-<tr><td style="background:#f9f9f9;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;">
-<p style="color:#999;font-size:12px;margin:0;">此邮件由系统自动发送，请勿直接回复</p>
-<p style="color:#999;font-size:12px;margin:5px 0 0;">© {site_name} · AI 资产管理系统</p>
-</td></tr>
-</table>
-</body>
-</html>',
-                '用户注册时发送的邮箱验证邮件',
-                '["site_name","username","verify_url"]',
-                true,
-                true
-            ],
-            [
-                'password_reset',
-                '找回密码',
-                '重置您的账户密码 - {site_name}',
-                '<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
-<tr><td style="padding:40px 0;text-align:center;background:#F59E0B;border-radius:12px 12px 0 0;">
-<h1 style="color:#fff;margin:0;font-size:24px;">🔐 {site_name}</h1>
-</td></tr>
-<tr><td style="background:#fff;padding:40px 30px;">
-<h2 style="color:#333;margin:0 0 20px;font-size:20px;">重置密码</h2>
-<p style="color:#666;line-height:1.6;margin:0 0 20px;">你好，{username}！</p>
-<p style="color:#666;line-height:1.6;margin:0 0 30px;">我们收到了您的密码重置请求。请点击下方按钮设置新密码，该链接将在 <strong>1 小时</strong>内有效。</p>
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="text-align:center;padding:20px 0;">
-<a href="{reset_url}" style="background:#F59E0B;color:#fff;padding:14px 40px;text-decoration:none;border-radius:8px;font-size:16px;font-weight:500;display:inline-block;">重置密码</a>
-</td></tr>
-</table>
-<p style="color:#999;font-size:12px;line-height:1.6;margin:20px 0 0;">如果您没有请求重置密码，请忽略此邮件。</p>
-<p style="color:#999;font-size:12px;line-height:1.6;margin:5px 0 0;">如果按钮无法点击，请复制以下链接到浏览器：</p>
-<p style="color:#F59E0B;font-size:12px;word-break:break-all;margin:5px 0 0;">{reset_url}</p>
-</td></tr>
-<tr><td style="background:#f9f9f9;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;">
-<p style="color:#999;font-size:12px;margin:0;">此邮件由系统自动发送，请勿直接回复</p>
-<p style="color:#999;font-size:12px;margin:5px 0 0;">© {site_name} · AI 资产管理系统</p>
-</td></tr>
-</table>
-</body>
-</html>',
-                '用户请求找回密码时发送',
-                '["site_name","username","reset_url"]',
-                true,
-                true
-            ],
-            [
-                'welcome',
-                '欢迎注册',
-                '欢迎加入 {site_name}！',
-                '<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
-<tr><td style="padding:40px 0;text-align:center;background:#10B981;border-radius:12px 12px 0 0;">
-<h1 style="color:#fff;margin:0;font-size:24px;">🎉 {site_name}</h1>
-</td></tr>
-<tr><td style="background:#fff;padding:40px 30px;">
-<h2 style="color:#333;margin:0 0 20px;font-size:20px;">欢迎加入！</h2>
-<p style="color:#666;line-height:1.6;margin:0 0 20px;">你好，{username}！</p>
-<p style="color:#666;line-height:1.6;margin:0 0 30px;">恭喜您成功注册了 {site_name} 账号。现在您可以使用 AI 网关服务了。</p>
-<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;margin:20px 0;">
-<p style="color:#166534;margin:0 0 10px;font-weight:500;">🚀 快速开始：</p>
-<ul style="color:#15803d;margin:0;padding-left:20px;">
-<li>前往用户中心创建您的第一个 API Token</li>
-<li>使用 Token 调用 OpenAI 兼容接口</li>
-<li>查看文档了解详细用法</li>
-</ul>
-</div>
-<table width="100%" cellpadding="0" cellspacing="0">
-<tr><td style="text-align:center;padding:10px 0;">
-<a href="{dashboard_url}" style="background:#10B981;color:#fff;padding:14px 40px;text-decoration:none;border-radius:8px;font-size:16px;font-weight:500;display:inline-block;">进入用户中心</a>
-</td></tr>
-</table>
-</td></tr>
-<tr><td style="background:#f9f9f9;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;">
-<p style="color:#999;font-size:12px;margin:0;">此邮件由系统自动发送，请勿直接回复</p>
-<p style="color:#999;font-size:12px;margin:5px 0 0;">© {site_name} · AI 资产管理系统</p>
-</td></tr>
-</table>
-</body>
-</html>',
-                '用户注册成功后发送的欢迎邮件',
-                '["site_name","username","dashboard_url"]',
-                true,
-                true
-            ],
-            [
-                'topup_notification',
-                '充值成功通知',
-                '充值成功 - {site_name}',
-                '<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;">
-<tr><td style="padding:40px 0;text-align:center;background:#3B82F6;border-radius:12px 12px 0 0;">
-<h1 style="color:#fff;margin:0;font-size:24px;">💰 {site_name}</h1>
-</td></tr>
-<tr><td style="background:#fff;padding:40px 30px;">
-<h2 style="color:#333;margin:0 0 20px;font-size:20px;">充值成功</h2>
-<p style="color:#666;line-height:1.6;margin:0 0 20px;">你好，{username}！</p>
-<p style="color:#666;line-height:1.6;margin:0 0 20px;">您的账户已成功充值，详情如下：</p>
-<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:20px 0;">
-<tr><td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;color:#666;width:40%;">充值金额</td><td style="padding:12px;border:1px solid #e5e7eb;font-weight:600;">¥{amount}</td></tr>
-<tr><td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;color:#666;">获得配额</td><td style="padding:12px;border:1px solid #e5e7eb;font-weight:600;">{quota}</td></tr>
-<tr><td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;color:#666;">当前余额</td><td style="padding:12px;border:1px solid #e5e7eb;font-weight:600;">{balance}</td></tr>
-<tr><td style="padding:12px;border:1px solid #e5e7eb;background:#f9fafb;color:#666;">充值时间</td><td style="padding:12px;border:1px solid #e5e7eb;">{time}</td></tr>
-</table>
-</td></tr>
-<tr><td style="background:#f9f9f9;padding:20px 30px;text-align:center;border-radius:0 0 12px 12px;">
-<p style="color:#999;font-size:12px;margin:0;">此邮件由系统自动发送，请勿直接回复</p>
-<p style="color:#999;font-size:12px;margin:5px 0 0;">© {site_name} · AI 资产管理系统</p>
-</td></tr>
-</table>
-</body>
-</html>',
-                '用户充值成功后发送的通知邮件',
-                '["site_name","username","amount","quota","balance","time"]',
-                true,
-                true
-            ],
-        ];
-
-        foreach ($templates as $t) {
-            $stmt = $db->prepare("
-                INSERT INTO mail_templates (slug, name, subject, content, description, variables, is_active, is_system)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->execute($t);
-            echo "Inserted template: {$t[1]}\n";
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#') continue;
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value, " \"'");
+            putenv("$key=$value");
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
         }
-        
-        echo "\nDefault templates inserted successfully\n";
     }
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
 }
+
+require __DIR__ . '/../vendor/autoload.php';
+use NewApi\Database\Connection;
+
+$db = Connection::getInstance();
+
+// Create mail_templates table
+$db->exec("
+CREATE TABLE IF NOT EXISTS mail_templates (
+    id SERIAL PRIMARY KEY,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(200) NOT NULL,
+    subject VARCHAR(500) NOT NULL,
+    content TEXT NOT NULL,
+    description TEXT,
+    variables JSON DEFAULT '[]',
+    is_active BOOLEAN DEFAULT true,
+    is_system BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+");
+
+echo "mail_templates table ready" . PHP_EOL;
+
+// Check existing templates
+$count = $db->query("SELECT COUNT(*) FROM mail_templates")->fetchColumn();
+if ($count > 0) {
+    echo "Found {$count} existing templates" . PHP_EOL;
+    $stmt = $db->query("SELECT id, slug, name FROM mail_templates ORDER BY id");
+    while ($row = $stmt->fetch()) {
+        echo "  - [{$row['id']}] {$row['slug']} ({$row['name']})" . PHP_EOL;
+    }
+    exit(0);
+}
+
+$templates = [
+    [
+        'slug' => 'email_verification',
+        'name' => '邮箱验证',
+        'subject' => '【{site_name}】请验证您的邮箱地址',
+        'description' => '用户注册时发送的邮箱验证码邮件',
+        'variables' => '["username", "verification_code"]',
+        'is_active' => true,
+        'is_system' => true,
+    ],
+    [
+        'slug' => 'password_reset',
+        'name' => '密码重置',
+        'subject' => '【{site_name}】密码重置验证码',
+        'description' => '用户请求重置密码时发送的验证码邮件',
+        'variables' => '["username", "verification_code"]',
+        'is_active' => true,
+        'is_system' => true,
+    ],
+    [
+        'slug' => 'topup_notification',
+        'name' => '充值通知',
+        'subject' => '【{site_name}】充值成功通知',
+        'description' => '用户充值成功后发送的通知邮件',
+        'variables' => '["username", "amount", "quota", "payment_method", "created_at"]',
+        'is_active' => true,
+        'is_system' => true,
+    ],
+];
+
+// Email verification content
+$templates[0]['content'] = '<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body{font-family:"Microsoft YaHei",sans-serif;background:#f5f5f5;padding:40px 0;margin:0}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.header{background:linear-gradient(135deg,#6366F1,#8B5CF6);padding:30px;text-align:center;color:#fff}
+.header h1{margin:0;font-size:24px}
+.body{padding:40px 30px}
+.body p{color:#333;line-height:1.8;margin:0 0 16px}
+.code-box{background:#f0f0ff;border:2px dashed #6366F1;border-radius:8px;padding:20px;text-align:center;margin:24px 0}
+.code{font-size:36px;font-weight:bold;color:#6366F1;letter-spacing:8px}
+.footer{background:#f9fafb;padding:20px 30px;text-align:center;color:#999;font-size:12px;border-top:1px solid #eee}
+</style></head><body>
+<div class="container">
+<div class="header"><h1>🫛 {site_name}</h1></div>
+<div class="body">
+<p>亲爱的 <strong>{username}</strong>，您好！</p>
+<p>感谢您注册 {site_name}。为了保障您的账户安全，请验证您的邮箱地址。</p>
+<div class="code-box">
+<p style="margin:0 0 8px;color:#666;font-size:14px">您的验证码是：</p>
+<div class="code">{verification_code}</div>
+</div>
+<p style="color:#999;font-size:14px">验证码有效期为 <strong>10 分钟</strong>，请及时使用。</p>
+<p style="color:#999;font-size:14px">如果您没有注册 {site_name} 账户，请忽略此邮件。</p>
+</div>
+<div class="footer"><p>此邮件由系统自动发送，请勿直接回复。</p><p>{site_name} · {site_url}</p></div>
+</div></body></html>';
+
+// Password reset content
+$templates[1]['content'] = '<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body{font-family:"Microsoft YaHei",sans-serif;background:#f5f5f5;padding:40px 0;margin:0}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.header{background:linear-gradient(135deg,#EF4444,#F59E0B);padding:30px;text-align:center;color:#fff}
+.header h1{margin:0;font-size:24px}
+.body{padding:40px 30px}
+.body p{color:#333;line-height:1.8;margin:0 0 16px}
+.code-box{background:#fff7ed;border:2px dashed #F59E0B;border-radius:8px;padding:20px;text-align:center;margin:24px 0}
+.code{font-size:36px;font-weight:bold;color:#F59E0B;letter-spacing:8px}
+.footer{background:#f9fafb;padding:20px 30px;text-align:center;color:#999;font-size:12px;border-top:1px solid #eee}
+.warning{background:#fef3c7;border-left:4px solid #F59E0B;padding:12px 16px;margin:16px 0;border-radius:4px}
+</style></head><body>
+<div class="container">
+<div class="header"><h1>🔐 {site_name} 密码重置</h1></div>
+<div class="body">
+<p>亲爱的 <strong>{username}</strong>，您好！</p>
+<p>我们收到了您重置密码的请求。请使用以下验证码完成密码重置：</p>
+<div class="code-box">
+<p style="margin:0 0 8px;color:#666;font-size:14px">您的验证码是：</p>
+<div class="code">{verification_code}</div>
+</div>
+<div class="warning">
+<p style="margin:0;color:#92400e;font-size:14px">⚠️ 安全提醒：如果您没有请求重置密码，请立即忽略此邮件。验证码有效期为 10 分钟。</p>
+</div>
+</div>
+<div class="footer"><p>此邮件由系统自动发送，请勿直接回复。</p><p>{site_name} · {site_url}</p></div>
+</div></body></html>';
+
+// Topup notification content
+$templates[2]['content'] = '<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+body{font-family:"Microsoft YaHei",sans-serif;background:#f5f5f5;padding:40px 0;margin:0}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.header{background:linear-gradient(135deg,#10B981,#059669);padding:30px;text-align:center;color:#fff}
+.header h1{margin:0;font-size:24px}
+.body{padding:40px 30px}
+.body p{color:#333;line-height:1.8;margin:0 0 16px}
+.info-box{background:#ecfdf5;border-radius:8px;padding:20px;margin:24px 0}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #d1fae5}
+.info-row:last-child{border-bottom:none}
+.info-label{color:#6b7280}
+.info-value{font-weight:bold;color:#059669}
+.footer{background:#f9fafb;padding:20px 30px;text-align:center;color:#999;font-size:12px;border-top:1px solid #eee}
+</style></head><body>
+<div class="container">
+<div class="header"><h1>💰 {site_name} 充值成功</h1></div>
+<div class="body">
+<p>亲爱的 <strong>{username}</strong>，您好！</p>
+<p>您的账户已成功充值，详情如下：</p>
+<div class="info-box">
+<div class="info-row"><span class="info-label">充值金额</span><span class="info-value">¥{amount}</span></div>
+<div class="info-row"><span class="info-label">到账额度</span><span class="info-value">{quota}</span></div>
+<div class="info-row"><span class="info-label">支付方式</span><span class="info-value">{payment_method}</span></div>
+<div class="info-row"><span class="info-label">交易时间</span><span class="info-value">{created_at}</span></div>
+</div>
+<p>登录 {site_name} 查看您的账户余额。</p>
+</div>
+<div class="footer"><p>此邮件由系统自动发送，请勿直接回复。</p><p>{site_name} · {site_url}</p></div>
+</div></body></html>';
+
+foreach ($templates as $t) {
+    $stmt = $db->prepare("
+        INSERT INTO mail_templates (slug, name, subject, content, description, variables, is_active, is_system, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+        ON CONFLICT (slug) DO NOTHING
+    ");
+    $stmt->execute([
+        $t['slug'], $t['name'], $t['subject'], $t['content'],
+        $t['description'], $t['variables'],
+        $t['is_active'] ? 't' : 'f',
+        $t['is_system'] ? 't' : 'f',
+    ]);
+    echo "Created: {$t['name']} ({$t['slug']})" . PHP_EOL;
+}
+
+echo PHP_EOL . "Mail templates initialized successfully!" . PHP_EOL;

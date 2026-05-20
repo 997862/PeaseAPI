@@ -6,7 +6,7 @@ use NewApi\Database\Model;
 
 class MailTemplate extends Model
 {
-    protected string $table = 'mail_templates';
+    protected static string $table = 'mail_templates';
 
     public static function findBySlug(string $slug): ?MailTemplate
     {
@@ -25,7 +25,10 @@ class MailTemplate extends Model
         return array_map(fn($r) => new self($r), $rows);
     }
 
-    public static function paginate(int $page = 1, int $perPage = 20, string $search = ''): array
+    /**
+     * 搜索分页（与父类 paginate 区分）
+     */
+    public static function searchPaginate(int $page = 1, int $perPage = 20, string $search = ''): array
     {
         $db = \NewApi\Database\Connection::getInstance();
         $offset = ($page - 1) * $perPage;
@@ -63,14 +66,12 @@ class MailTemplate extends Model
         $subject = $this->subject;
         $content = $this->content;
 
-        // 添加默认变量
         $defaults = [
             'site_name' => Option::get('SystemName', 'PeaseAPI'),
-            'site_url' => Option::get('FrontendURL', request()->getScheme() . '://' . request()->getHost()),
+            'site_url' => Option::get('FrontendURL', 'https://www.peaseapi.com'),
         ];
         $variables = array_merge($defaults, $variables);
 
-        // 替换 {variable} 占位符
         foreach ($variables as $key => $value) {
             $subject = str_replace('{' . $key . '}', $value, $subject);
             $content = str_replace('{' . $key . '}', $value, $content);
@@ -88,7 +89,6 @@ class MailTemplate extends Model
     public function sendTo(string $toEmail, array $variables = []): array
     {
         $rendered = $this->render($variables);
-
         $mailer = new \NewApi\Services\SmtpMailer();
         return $mailer->send($toEmail, $rendered['subject'], $rendered['content']);
     }

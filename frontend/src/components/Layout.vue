@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="flex min-h-screen bg-gray-100">
     <!-- Mobile sidebar overlay -->
     <div
       v-if="sidebarOpen"
@@ -10,13 +10,13 @@
     <!-- Sidebar -->
     <Sidebar :open="sidebarOpen" @close="sidebarOpen = false" />
 
-    <!-- Main content -->
-    <div class="lg:pl-64">
+    <!-- Main content wrapper -->
+    <div class="flex-1 flex flex-col min-w-0">
       <!-- Top header -->
       <Header @toggle-sidebar="sidebarOpen = !sidebarOpen" />
 
       <!-- Page content -->
-      <main class="py-6">
+      <main class="flex-1 py-6 overflow-y-auto">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <router-view v-slot="{ Component }">
             <transition name="fade" mode="out-in">

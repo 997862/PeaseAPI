@@ -114,7 +114,7 @@ async function loadTokens() {
     const token = localStorage.getItem('token')
     const res = await fetch('/api/user/tokens', { headers: { 'Authorization': `Bearer ${token}` } })
     const json = await res.json()
-    if (json.code === 200) tokens.value = json.data?.items || json.data || []
+    if (json.success) tokens.value = json.data?.items || json.data || []
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
@@ -141,7 +141,7 @@ async function saveToken() {
       body: JSON.stringify(form.value)
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       closeModal()
       loadTokens()
     } else {
@@ -159,7 +159,7 @@ async function deleteToken(id) {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) loadTokens()
+    if (json.success) loadTokens()
     else alert('删除失败: ' + (json.message || '未知错误'))
   } catch (e) { alert('网络错误: ' + e.message) }
 }

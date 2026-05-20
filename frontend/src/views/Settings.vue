@@ -214,7 +214,7 @@ async function loadConfig() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       config.value = json.data || {}
     }
   } catch (e) {
@@ -247,7 +247,7 @@ async function saveConfig(tab) {
       body: JSON.stringify({ options })
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       alert('保存成功！')
     } else {
       alert('保存失败: ' + (json.message || '未知错误'))
@@ -272,7 +272,7 @@ async function testSmtp() {
       body: JSON.stringify(config.value)
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       alert('SMTP 连接测试成功！')
     } else {
       alert('测试失败: ' + (json.message || '未知错误'))

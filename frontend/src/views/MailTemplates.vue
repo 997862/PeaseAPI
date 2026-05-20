@@ -121,7 +121,7 @@ async function loadTemplates() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       templates.value = json.data?.items || json.data || []
     } else {
       console.error('Failed to load templates:', json.message)
@@ -144,7 +144,7 @@ async function saveTemplate() {
       body: JSON.stringify(editForm.value)
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       editing.value = null
       loadTemplates()
     } else {
@@ -173,7 +173,7 @@ async function doTestSend() {
       body: JSON.stringify({ to: testEmail.value })
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       alert('测试邮件已发送，请检查收件箱')
       testing.value = null
     } else {

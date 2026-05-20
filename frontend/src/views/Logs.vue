@@ -163,7 +163,7 @@ async function loadApiLogs() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) logs.value = json.data?.items || json.data || []
+    if (json.success) logs.value = json.data?.items || json.data || []
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
@@ -176,7 +176,7 @@ async function loadLoginLogs() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       loginLogs.value = json.data?.items || json.data || []
       // 批量解析 IP
       await resolveIPs()
@@ -203,7 +203,7 @@ async function resolveIPs() {
       body: JSON.stringify({ ips: uncached })
     })
     const json = await res.json()
-    if (json.code === 200) {
+    if (json.success) {
       Object.assign(ipCache.value, json.data)
     }
   } catch (e) { console.error('IP resolve failed:', e) }
@@ -217,7 +217,7 @@ async function loadAdminLogs() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) adminLogs.value = json.data?.items || json.data || []
+    if (json.success) adminLogs.value = json.data?.items || json.data || []
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }

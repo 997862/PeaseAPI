@@ -24,13 +24,12 @@ class AdminLogController
 
         $db = Connection::getInstance();
         
-        // Get total count
+        // 使用正确的字段名：admin_id→user_id, admin_username→username
         $stmt = $db->query("SELECT COUNT(*) FROM admin_logs");
         $total = (int) $stmt->fetchColumn();
         
-        // Get logs
         $stmt = $db->query("
-            SELECT id, user_id, username, action, result, ip, created_at 
+            SELECT id, admin_id as user_id, admin_username as username, action, ip, created_at 
             FROM admin_logs 
             ORDER BY created_at DESC 
             LIMIT $perPage OFFSET $offset
@@ -42,7 +41,7 @@ class AdminLogController
             'rows' => $logs,
             'page' => $page,
             'per_page' => $perPage,
-            'total_pages' => ceil($total / $perPage),
+            'total_pages' => (int) ceil($total / max($perPage, 1)),
         ]);
     }
 }

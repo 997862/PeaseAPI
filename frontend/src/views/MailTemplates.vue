@@ -11,7 +11,7 @@
     <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
       <div class="p-4 border-b border-gray-200 flex flex-wrap gap-3">
         <input v-model="search" type="text" placeholder="搜索模板..." class="flex-1 min-w-[200px] rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" @keyup.enter="loadTemplates" />
-        <button @click="loadTemplates" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">刷新</button>
+        <button @click="loadTemplates" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
       </div>
 
       <div v-if="loading" class="py-8 text-center text-gray-500">加载中...</div>
@@ -62,7 +62,7 @@
         </div>
         <div class="flex justify-end gap-3 mt-6">
           <button @click="editing = null" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">取消</button>
-          <button @click="saveTemplate" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">保存</button>
+          <button @click="saveTemplate" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">保存</button>
         </div>
       </div>
     </div>
@@ -93,7 +93,7 @@
         </div>
         <div class="flex justify-end gap-3 mt-6">
           <button @click="testing = null" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">取消</button>
-          <button @click="doTestSend" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">发送测试</button>
+          <button @click="doTestSend" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">发送测试</button>
         </div>
       </div>
     </div>

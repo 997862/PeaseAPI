@@ -46,6 +46,7 @@ use NewApi\Controllers\MailController;
 use NewApi\Controllers\NodeController;
 use NewApi\Controllers\InvitationController;
 use NewApi\Controllers\MetricsController;
+use NewApi\Controllers\IpLocationController;
 use NewApi\Controllers\RoleController;
 use NewApi\Controllers\GroupController2;
 
@@ -121,6 +122,7 @@ $mailController = new MailController();
 $nodeController = new NodeController();
 $invitationController = new InvitationController();
 $metricsController = new MetricsController();
+$ipLocationController = new IpLocationController();
 $roleController = new RoleController();
 $groupController2 = new GroupController2();
 
@@ -311,6 +313,7 @@ $router->post('/api/nodes/sync-all', withAdminAuth(fn($req) => $nodeController->
 // Metrics
 $router->get('/api/metrics/realtime', withAdminAuth(fn($req) => $metricsController->getRealtime($req)));
 $router->get('/api/metrics/trend', withAdminAuth(fn($req) => $metricsController->getTrend($req)));
+$router->post('/api/ip-location', withAdminAuth(fn($req) => $ipLocationController->lookup($req)));
 
 // Start the server
 $router->run();

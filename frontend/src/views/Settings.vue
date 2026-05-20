@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="flex justify-end pt-4">
-        <button @click="saveConfig('system')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition">
+        <button @click="saveConfig('system')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
           <svg v-if="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
           保存设置
         </button>
@@ -103,7 +103,7 @@
       </div>
 
       <div class="flex justify-end">
-        <button @click="saveConfig('payment')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition">
+        <button @click="saveConfig('payment')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
           <svg v-if="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
           保存支付配置
         </button>
@@ -150,10 +150,10 @@
         </div>
       </div>
       <div class="flex justify-end gap-3 pt-4">
-        <button @click="testSmtp" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition">
+        <button @click="testSmtp" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition whitespace-nowrap">
           测试连接
         </button>
-        <button @click="saveConfig('smtp')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition">
+        <button @click="saveConfig('smtp')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
           <svg v-if="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
           保存 SMTP 配置
         </button>
@@ -185,7 +185,7 @@
         </div>
       </div>
       <div class="flex justify-end pt-4">
-        <button @click="saveConfig('other')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition">
+        <button @click="saveConfig('other')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
           保存设置
         </button>
       </div>
@@ -202,7 +202,7 @@ const config = ref({})
 
 const tabs = [
   { key: 'system', name: '🔧 系统设置' },
-  { key: 'payment', name: '💰 支付配置' },
+  { key: 'payment', name: ' 支付配置' },
   { key: 'smtp', name: '📧 SMTP 配置' },
   { key: 'other', name: '⚙️ 其他设置' },
 ]
@@ -210,7 +210,7 @@ const tabs = [
 async function loadConfig() {
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('/api/admin/options', {
+    const res = await fetch('/api/options', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
@@ -238,7 +238,7 @@ async function saveConfig(tab) {
       if (config.value[k] !== undefined) options[k] = config.value[k]
     })
 
-    const res = await fetch('/api/admin/options/batch', {
+    const res = await fetch('/api/options/batch', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

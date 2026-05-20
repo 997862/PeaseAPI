@@ -1,14 +1,14 @@
 <template>
   <div class="space-y-6">
     <!-- Page header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
       <div>
         <h2 class="text-xl font-bold text-gray-900">渠道管理</h2>
         <p class="mt-1 text-sm text-gray-500">管理 AI 上游渠道配置</p>
       </div>
       <div class="flex gap-2">
         <button
-          class="inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-400 transition"
+          class="inline-flex items-center gap-2 rounded-lg bg-orange-500 whitespace-nowrap px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-400 transition"
           @click="testAllChannels"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -17,7 +17,7 @@
           批量测试
         </button>
         <button
-          class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 transition"
+          class="inline-flex items-center gap-2 rounded-lg bg-primary-600 whitespace-nowrap px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 transition"
           @click="showCreateModal = true"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,7 +30,7 @@
 
     <!-- Filters -->
     <div class="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-200">
-      <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <div class="flex-1">
           <input
             v-model="searchKeyword"
@@ -60,7 +60,7 @@
           <option value="4">自动禁用</option>
         </select>
         <button
-          class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition"
+          class="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition whitespace-nowrap"
           @click="loadChannels"
         >
           搜索

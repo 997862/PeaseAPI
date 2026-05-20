@@ -724,9 +724,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div class="sc"><p class="text-indigo-100 text-sm">总邀请数</p><p class="text-4xl font-bold mt-1">{{ inviteStats.total_invited||0 }}</p></div>
                     <div class="sc" style="background:linear-gradient(135deg,#10B981,#059669)"><p class="text-green-100 text-sm">总发放配额</p><p class="text-4xl font-bold mt-1">{{ fq(inviteStats.total_reward||0) }}</p></div>
-                    <div><label class="block text-sm font-medium mb-2 text-white">单次奖励配额</label>
+                    <div class="sc" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED)"><label class="block text-sm font-medium mb-2 text-purple-100">单次奖励配额</label>
                         <div class="flex gap-2 mt-2">
-                            <input v-model.number="inviteReward" type="number" class="inp bg-white/10 text-white border-white/20" placeholder="1000000">
+                            <input v-model.number="inviteReward" type="number" class="inp bg-white/20 text-white border-white/30 placeholder-white/50" placeholder="1000000">
                             <button @click="saveInviteReward" class="bp">设置</button>
                         </div>
                     </div>

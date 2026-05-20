@@ -18,9 +18,9 @@
 
     <!-- API Logs -->
     <div v-if="activeTab === 'api'" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-      <div class="p-4 border-b border-gray-200 flex flex-wrap gap-3">
+      <div class="p-4 border-b border-gray-200 flex flex-wrap items-center gap-3">
         <input v-model="apiSearch" type="text" placeholder="搜索模型或用户名..." class="flex-1 min-w-[200px] rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" @keyup.enter="loadApiLogs" />
-        <button @click="loadApiLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">刷新</button>
+        <button @click="loadApiLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
       </div>
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -48,8 +48,8 @@
 
     <!-- Login Logs -->
     <div v-if="activeTab === 'login'" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-      <div class="p-4 border-b border-gray-200 flex flex-wrap gap-3">
-        <button @click="loadLoginLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">刷新</button>
+      <div class="p-4 border-b border-gray-200 flex flex-wrap items-center gap-3">
+        <button @click="loadLoginLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
       </div>
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -68,7 +68,7 @@
             <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{{ fmtTime(l.login_time || l.created_at) }}</td>
             <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ l.username || '-' }}</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ l.login_ip || l.ip || '-' }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ l.location || lookupIP(l.login_ip || l.ip) }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ getLocation(l.login_ip || l.ip) }}</td>
             <td class="px-4 py-3 text-sm text-gray-500 truncate max-w-[200px]" :title="l.user_agent || ''">{{ l.user_agent || '-' }}</td>
           </tr>
         </tbody>
@@ -77,8 +77,8 @@
 
     <!-- Admin Logs -->
     <div v-if="activeTab === 'admin'" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-      <div class="p-4 border-b border-gray-200 flex flex-wrap gap-3">
-        <button @click="loadAdminLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500">刷新</button>
+      <div class="p-4 border-b border-gray-200 flex flex-wrap items-center gap-3">
+        <button @click="loadAdminLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
       </div>
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -140,9 +140,11 @@ function typeLabel(t) {
   return { 1: 'API 调用', 2: '管理操作', 3: '系统事件' }[t] || t || '-'
 }
 
-function lookupIP(ip) {
+function getLocation(ip) {
   if (!ip) return '-'
-  if (ipCache.value[ip]) return ipCache.value[ip]
+  if (ipCache.value[ip] !== undefined) {
+    return ipCache.value[ip] || '-'
+  }
   return '解析中...'
 }
 
@@ -157,7 +159,7 @@ async function loadApiLogs() {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch(`/api/logs/calls?page=1&per_page=50&search=${apiSearch.value}`, {
+    const res = await fetch(`/api/logs?page=1&per_page=50&search=${apiSearch.value}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
@@ -170,20 +172,48 @@ async function loadLoginLogs() {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('/api/logs/login?page=1&per_page=50', {
+    const res = await fetch('/api/login-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.code === 200) loginLogs.value = json.data?.items || json.data || []
+    if (json.code === 200) {
+      loginLogs.value = json.data?.items || json.data || []
+      // 批量解析 IP
+      await resolveIPs()
+    }
   } catch (e) { console.error(e) }
   finally { loading.value = false }
+}
+
+async function resolveIPs() {
+  const ips = [...new Set(loginLogs.value.map(l => l.login_ip || l.ip).filter(Boolean))]
+  if (ips.length === 0) return
+  
+  const uncached = ips.filter(ip => ipCache.value[ip] === undefined)
+  if (uncached.length === 0) return
+
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch('/api/ip-location', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ ips: uncached })
+    })
+    const json = await res.json()
+    if (json.code === 200) {
+      Object.assign(ipCache.value, json.data)
+    }
+  } catch (e) { console.error('IP resolve failed:', e) }
 }
 
 async function loadAdminLogs() {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('/api/logs/admin?page=1&per_page=50', {
+    const res = await fetch('/api/admin-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()

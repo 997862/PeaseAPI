@@ -209,7 +209,7 @@ const tabs = [
 
 async function loadConfig() {
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/options', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -225,7 +225,7 @@ async function loadConfig() {
 async function saveConfig(tab) {
   saving.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const keys = {
       system: ['SystemName', 'FrontendURL', 'LogoURL', 'ThemeColor'],
       payment: ['AlipayEnabled', 'AlipayAppId', 'AlipayPrivateKey', 'AlipayPublicKey', 'AlipayNotifyUrl', 'WechatPayEnabled', 'WechatPayMchId', 'WechatPayApiKey', 'WechatPayNotifyUrl'],
@@ -262,7 +262,7 @@ async function saveConfig(tab) {
 async function testSmtp() {
   saving.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/mail/test-smtp', {
       method: 'POST',
       headers: {

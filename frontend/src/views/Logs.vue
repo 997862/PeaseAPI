@@ -158,7 +158,7 @@ async function switchTab(tab) {
 async function loadApiLogs() {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch(`/api/logs?page=1&per_page=50&search=${apiSearch.value}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -171,7 +171,7 @@ async function loadApiLogs() {
 async function loadLoginLogs() {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/login-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -193,7 +193,7 @@ async function resolveIPs() {
   if (uncached.length === 0) return
 
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/ip-location', {
       method: 'POST',
       headers: {
@@ -212,7 +212,7 @@ async function resolveIPs() {
 async function loadAdminLogs() {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/admin-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }
     })

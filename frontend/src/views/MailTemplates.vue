@@ -116,7 +116,7 @@ const testEmail = ref('')
 async function loadTemplates() {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch(`/api/mail/templates?page=1&per_page=50&search=${search.value}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -137,7 +137,7 @@ function editTemplate(t) {
 
 async function saveTemplate() {
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch(`/api/mail/templates/${editing.value.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -166,7 +166,7 @@ function testSend(t) {
 async function doTestSend() {
   if (!testEmail.value) { alert('请输入邮箱地址'); return }
   try {
-    const token = localStorage.getItem('token')
+    const token = sessionStorage.getItem('access_token')
     const res = await fetch(`/api/mail/templates/${testing.value.id}/test`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },

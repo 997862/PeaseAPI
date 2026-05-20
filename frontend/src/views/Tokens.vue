@@ -111,8 +111,8 @@ function copyToken(key) {
 async function loadTokens() {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const res = await fetch('/api/user/tokens', { headers: { 'Authorization': `Bearer ${token}` } })
+    const token = sessionStorage.getItem('access_token')
+    const res = await fetch('/api/token/self', { headers: { 'Authorization': `Bearer ${token}` } })
     const json = await res.json()
     if (json.success) tokens.value = json.data?.items || json.data || []
   } catch (e) { console.error(e) }
@@ -132,8 +132,8 @@ function closeModal() {
 
 async function saveToken() {
   try {
-    const token = localStorage.getItem('token')
-    const url = editingToken.value ? `/api/user/tokens/${editingToken.value.id}` : '/api/user/tokens'
+    const token = sessionStorage.getItem('access_token')
+    const url = editingToken.value ? `/api/token/self/${editingToken.value.id}` : '/api/token/self'
     const method = editingToken.value ? 'PUT' : 'POST'
     const res = await fetch(url, {
       method,
@@ -153,8 +153,8 @@ async function saveToken() {
 async function deleteToken(id) {
   if (!confirm('确定删除此 Token？')) return
   try {
-    const token = localStorage.getItem('token')
-    const res = await fetch(`/api/user/tokens/${id}`, {
+    const token = sessionStorage.getItem('access_token')
+    const res = await fetch(`/api/token/self/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     })

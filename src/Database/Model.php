@@ -259,12 +259,17 @@ abstract class Model implements \JsonSerializable
 
         if ($result) {
             $this->exists = true;
-            $lastId = $db->lastInsertId();
-            if ($lastId && static::$primaryKey !== 'id') {
-                $this->attributes[static::$primaryKey] = $lastId;
-            }
-            if ($lastId) {
-                $this->attributes['id'] = (int) $lastId;
+            // 仅当主键是 'id' 且表可能有自增序列时才调用 lastInsertId()
+            // PostgreSQL 的 lastInsertId() 调用 lastval()，对无自增序列的表会报错
+            if (static::$primaryKey === 'id') {
+                try {
+                    $lastId = $db->lastInsertId();
+                    if ($lastId !== false && $lastId !== '0') {
+                        $this->attributes['id'] = (int) $lastId;
+                    }
+                } catch (\Exception $e) {
+                    // 忽略 lastval 未定义错误（表无自增序列时）
+                }
             }
         }
         return $result;

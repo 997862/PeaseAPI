@@ -30,7 +30,7 @@ class LoginLogController
         
         // Get logs
         $stmt = $db->query("
-            SELECT id, user_id, username, ip, login_time as created_at, status 
+            SELECT id, user_id, username, login_ip as ip, login_time as created_at, status 
             FROM login_logs 
             ORDER BY login_time DESC 
             LIMIT $perPage OFFSET $offset

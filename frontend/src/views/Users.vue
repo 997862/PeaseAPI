@@ -74,16 +74,17 @@
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">已用配额</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分组</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注册 IP</th>
               <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注册时间</th>
               <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200 bg-white">
             <tr v-if="loading">
-              <td colspan="8" class="py-8 text-center text-gray-500">加载中...</td>
+              <td colspan="9" class="py-8 text-center text-gray-500">加载中...</td>
             </tr>
             <tr v-else-if="users.length === 0">
-              <td colspan="8" class="py-8 text-center text-gray-500">暂无用户数据</td>
+              <td colspan="9" class="py-8 text-center text-gray-500">暂无用户数据</td>
             </tr>
             <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
               <td class="px-4 py-3">
@@ -110,6 +111,7 @@
                   {{ getStatusLabel(user.status) }}
                 </span>
               </td>
+              <td class="px-4 py-3 text-sm text-gray-500">{{ user.registration_ip || "-" }}</td>
               <td class="px-4 py-3 text-sm text-gray-500">{{ formatDate(user.created_at) }}</td>
               <td class="px-4 py-3 text-right text-sm font-medium">
                 <button class="text-primary-600 hover:text-primary-500 mr-3" @click="editUser(user)">编辑</button>

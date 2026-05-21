@@ -4,6 +4,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { resolve } from 'path'
 
 export default defineConfig({
+  base: '/app/',
   plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
@@ -11,8 +12,8 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: resolve(__dirname, '../public'),
-    emptyOutDir: false,
+    outDir: resolve(__dirname, '../public/app'),
+    emptyOutDir: true,
     assetsDir: 'assets',
     rollupOptions: {
       output: {

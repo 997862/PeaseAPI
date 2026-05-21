@@ -33,7 +33,7 @@ api.interceptors.response.use(
       if (status === 401) {
         sessionStorage.removeItem('access_token')
         sessionStorage.removeItem('user')
-        window.location.href = '/login'
+        window.location.href = import.meta.env.BASE_URL + 'login'
         return Promise.reject(new Error('登录已过期，请重新登录'))
       }
       if (status === 403) {

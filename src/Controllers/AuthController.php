@@ -24,7 +24,7 @@ class AuthController
 
         $user = User::verifyUser($username, $password);
         if (!$user) {
-            return Response::error('用户名或密码错误', 401);
+            return Response::error('用户名或密码错误', 400);
         }
 
         // 后台登录权限拦截：仅允许角色 >= 2 (管理员/超管) 登录

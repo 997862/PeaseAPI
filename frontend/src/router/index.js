@@ -4,12 +4,6 @@ import { useAuth } from '@/store/auth'
 const routes = [
   {
     path: '/',
-    name: 'Landing',
-    component: () => import('@/views/Landing.vue'),
-    meta: { requiresAuth: false, title: 'PeaseAI - API 管理平台' },
-  },
-  {
-    path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
     meta: { requiresAuth: false, title: '登录' },
@@ -90,7 +84,7 @@ router.beforeEach((to, from, next) => {
     return
   }
 
-  if (to.meta.title && to.name !== 'Landing') {
+  if (to.meta.title) {
     document.title = `${to.meta.title} - PeaseAPI 管理平台`
   }
 

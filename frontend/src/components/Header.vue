@@ -101,7 +101,7 @@ const pageTitle = computed(() => route.meta?.title || 'PeaseAI')
 
 function goToProfile() {
   dropdownOpen.value = false
-  // Could navigate to profile page
+  router.push('/dashboard/settings')
 }
 
 async function handleLogout() {

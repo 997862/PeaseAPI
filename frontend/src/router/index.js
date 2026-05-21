@@ -4,9 +4,10 @@ import { useAuth } from '@/store/auth'
 const routes = [
   {
     path: '/',
-    name: 'Landing',
-    component: () => import('@/views/Landing.vue'),
-    meta: { requiresAuth: false, title: 'PeaseAPI - AI API 网关管理平台' },
+    redirect: '/login',
+    
+    
+    
   },
   {
     path: '/login',

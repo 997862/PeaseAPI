@@ -203,7 +203,7 @@ createApp({
         async doLogin() {
             this.loading = true;
             try {
-                const r = await api.post('/user/login', { username: this.lf.username, password: this.lf.password });
+                const r = await api.post('/auth/public-login', { username: this.lf.username, password: this.lf.password });
                 if (r.data.success) {
                     sessionStorage.setItem('access_token', r.data.data.token);
                     this.msg('登录成功，正在跳转...');

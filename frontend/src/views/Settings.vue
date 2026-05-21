@@ -160,6 +160,58 @@
       </div>
     </div>
 
+    <!-- SMS Settings -->
+    <div v-if="activeTab === 'sms'" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-6">
+      <!-- Aliyun SMS -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">阿里云短信</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.SmsAliyunEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用阿里云短信</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">AccessKey ID</label>
+            <input v-model="config.SmsAliyunAccessKeyId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="LTAIxxxxxxxx" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">AccessKey Secret</label>
+            <input v-model="config.SmsAliyunAccessKeySecret" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">短信签名</label>
+            <input v-model="config.SmsAliyunSignName" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="码农软件" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">验证码模板 CODE</label>
+            <input v-model="config.SmsAliyunTemplateCode" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="SMS_123456789" /></div>
+        </div>
+      </div>
+      <!-- Tencent SMS -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">腾讯云短信</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.SmsTencentEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用腾讯云短信</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">SecretId</label>
+            <input v-model="config.SmsTencentSecretId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="AKIDxxxxxxxx" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">SecretKey</label>
+            <input v-model="config.SmsTencentSecretKey" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">SDK AppID</label>
+            <input v-model="config.SmsTencentSdkAppId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="1400xxxxxx" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">短信签名</label>
+            <input v-model="config.SmsTencentSignName" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="码农软件" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">验证码模板 ID</label>
+            <input v-model="config.SmsTencentTemplateId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="123456" /></div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-3 pt-4">
+        <button @click="testSms" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 transition whitespace-nowrap">📱 测试短信</button>
+        <button @click="saveConfig('sms')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
+          <svg v-if="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          保存短信配置</button>
+      </div>
+    </div>
+
     <!-- Other Settings -->
     <div v-if="activeTab === 'other'" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-4">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -204,6 +256,7 @@ const tabs = [
   { key: 'system', name: '🔧 系统设置' },
   { key: 'payment', name: ' 支付配置' },
   { key: 'smtp', name: '📧 SMTP 配置' },
+  { key: 'sms', name: '📱 短信配置' },
   { key: 'other', name: '⚙️ 其他设置' },
 ]
 
@@ -230,6 +283,7 @@ async function saveConfig(tab) {
       system: ['SystemName', 'FrontendURL', 'LogoURL', 'ThemeColor'],
       payment: ['AlipayEnabled', 'AlipayAppId', 'AlipayPrivateKey', 'AlipayPublicKey', 'AlipayNotifyUrl', 'WechatPayEnabled', 'WechatPayMchId', 'WechatPayApiKey', 'WechatPayNotifyUrl'],
       smtp: ['SmtpEnabled', 'SmtpHost', 'SmtpPort', 'SmtpUseSsl', 'SmtpUsername', 'SmtpPassword', 'SmtpFromEmail', 'SmtpFromName'],
+      sms: ['SmsAliyunEnabled', 'SmsAliyunAccessKeyId', 'SmsAliyunAccessKeySecret', 'SmsAliyunSignName', 'SmsAliyunTemplateCode', 'SmsTencentEnabled', 'SmsTencentSecretId', 'SmsTencentSecretKey', 'SmsTencentSdkAppId', 'SmsTencentSignName', 'SmsTencentTemplateId'],
       other: ['RegisterEnabled', 'EmailVerificationEnabled'],
     }[tab]
 
@@ -282,6 +336,25 @@ async function testSmtp() {
   } finally {
     saving.value = false
   }
+}
+
+async function testSms() {
+  saving.value = true
+  const phone = prompt("请输入接收测试短信的手机号：")
+  if (!phone) { saving.value = false; return }
+  const provider = confirm("点击确定测试阿里云短信，点击取消测试腾讯云短信") ? "aliyun" : "tencent"
+  try {
+    const token = sessionStorage.getItem("access_token")
+    const res = await fetch("/api/sms/test-send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+      body: JSON.stringify({ phone, provider, config: config.value })
+    })
+    const json = await res.json()
+    if (json.success) alert("测试短信已发送！请检查手机：" + phone)
+    else alert("发送失败: " + (json.message || "未知错误"))
+  } catch (e) { alert("网络错误: " + e.message) }
+  finally { saving.value = false }
 }
 
 onMounted(() => loadConfig())

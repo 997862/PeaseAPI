@@ -160,6 +160,88 @@
       </div>
     </div>
 
+    <!-- OAuth Settings -->
+    <div v-if="activeTab === 'oauth'" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-6">
+      <!-- GitHub -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">🐙 GitHub</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.GitHubOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用 GitHub 登录</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Client ID</label>
+            <input v-model="config.GitHubClientId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="Iv1.xxxx" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Client Secret</label>
+            <input v-model="config.GitHubClientSecret" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">回调 URL</label>
+            <input v-model="config.GitHubRedirectUri" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="https://www.peaseapi.com/api/oauth/github/callback" /></div>
+        </div>
+      </div>
+      <!-- Google -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">🔵 Google</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.GoogleOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用 Google 登录</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Client ID</label>
+            <input v-model="config.GoogleClientId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="xxx.apps.googleusercontent.com" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">Client Secret</label>
+            <input v-model="config.GoogleClientSecret" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">回调 URL</label>
+            <input v-model="config.GoogleRedirectUri" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="https://www.peaseapi.com/api/oauth/google/callback" /></div>
+        </div>
+      </div>
+      <!-- QQ -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">🐧 QQ</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.QQOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用 QQ 登录</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">App ID</label>
+            <input v-model="config.QQClientId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="101xxx" /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">App Key</label>
+            <input v-model="config.QQClientSecret" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">回调 URL</label>
+            <input v-model="config.QQRedirectUri" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="https://www.peaseapi.com/api/oauth/qq/callback" /></div>
+        </div>
+      </div>
+      <!-- WeChat -->
+      <div class="border border-gray-200 rounded-lg p-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-900">💬 微信</h3>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="config.WechatOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
+            <span class="text-sm text-gray-700">启用微信登录</span>
+          </label>
+        </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">App ID</label>
+            <input v-model="config.WechatClientId" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="wx..." /></div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-1">App Secret</label>
+            <input v-model="config.WechatClientSecret" type="password" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="密钥" /></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">回调 URL</label>
+            <input v-model="config.WechatRedirectUri" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="https://www.peaseapi.com/api/oauth/wechat/callback" /></div>
+        </div>
+      </div>
+      <div class="flex justify-end pt-4">
+        <button @click="saveConfig('oauth')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
+          <svg v-if="saving" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+          保存 OAuth 配置
+        </button>
+      </div>
+    </div>
+
     <!-- SMS Settings -->
     <div v-if="activeTab === 'sms'" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-6">
       <!-- Aliyun SMS -->
@@ -228,6 +310,75 @@
         <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
           <div>
             <h4 class="font-medium text-gray-900">邮箱验证</h4>
+            <p class="text-sm text-gray-500">注册时必须验证邮箱</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.EmailVerificationEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">短信验证</h4>
+            <p class="text-sm text-gray-500">注册时必须验证手机号</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.SmsVerificationEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">用户名密码登录</h4>
+            <p class="text-sm text-gray-500">允许使用用户名+密码登录</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.PasswordLoginEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">邮箱登录</h4>
+            <p class="text-sm text-gray-500">允许使用邮箱+密码登录</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.EmailLoginEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">手机号登录</h4>
+            <p class="text-sm text-gray-500">允许使用手机号+验证码登录</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.SmsLoginEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+      </div>
+      <div class="flex justify-end pt-4">
+        <button @click="saveConfig('other')" :disabled="saving" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-500 disabled:opacity-50 transition whitespace-nowrap">
+          保存设置
+        </button>
+      </div>
+    </div>
+    <div v-if="activeTab === 'other'" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200 space-y-4">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">开放注册</h4>
+            <p class="text-sm text-gray-500">允许新用户注册</p>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="config.RegisterEnabled" :true-value="'true'" :false-value="'false'" class="sr-only peer" />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+          <div>
+            <h4 class="font-medium text-gray-900">邮箱验证</h4>
             <p class="text-sm text-gray-500">注册时需要验证邮箱</p>
           </div>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -257,6 +408,7 @@ const tabs = [
   { key: 'payment', name: ' 支付配置' },
   { key: 'smtp', name: '📧 SMTP 配置' },
   { key: 'sms', name: '📱 短信配置' },
+  { key: 'oauth', name: '🔗 OAuth 登录' },
   { key: 'other', name: '⚙️ 其他设置' },
 ]
 
@@ -284,7 +436,8 @@ async function saveConfig(tab) {
       payment: ['AlipayEnabled', 'AlipayAppId', 'AlipayPrivateKey', 'AlipayPublicKey', 'AlipayNotifyUrl', 'WechatPayEnabled', 'WechatPayMchId', 'WechatPayApiKey', 'WechatPayNotifyUrl'],
       smtp: ['SmtpEnabled', 'SmtpHost', 'SmtpPort', 'SmtpUseSsl', 'SmtpUsername', 'SmtpPassword', 'SmtpFromEmail', 'SmtpFromName'],
       sms: ['SmsAliyunEnabled', 'SmsAliyunAccessKeyId', 'SmsAliyunAccessKeySecret', 'SmsAliyunSignName', 'SmsAliyunTemplateCode', 'SmsTencentEnabled', 'SmsTencentSecretId', 'SmsTencentSecretKey', 'SmsTencentSdkAppId', 'SmsTencentSignName', 'SmsTencentTemplateId'],
-      other: ['RegisterEnabled', 'EmailVerificationEnabled'],
+      oauth: ['GitHubOAuthEnabled', 'GitHubClientId', 'GitHubClientSecret', 'GitHubRedirectUri', 'GoogleOAuthEnabled', 'GoogleClientId', 'GoogleClientSecret', 'GoogleRedirectUri', 'QQOAuthEnabled', 'QQClientId', 'QQClientSecret', 'QQRedirectUri', 'WechatOAuthEnabled', 'WechatClientId', 'WechatClientSecret', 'WechatRedirectUri'],
+      other: ['RegisterEnabled', 'EmailVerificationEnabled', 'SmsVerificationEnabled', 'PasswordLoginEnabled', 'EmailLoginEnabled', 'SmsLoginEnabled'],
     }[tab]
 
     const options = {}

@@ -5,15 +5,14 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue(), vueJsx()],
-  base: '/app/',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
     },
   },
   build: {
-    outDir: resolve(__dirname, '../public/app'),
-    emptyOutDir: true,
+    outDir: resolve(__dirname, '../public'),
+    emptyOutDir: false,
     assetsDir: 'assets',
     rollupOptions: {
       output: {

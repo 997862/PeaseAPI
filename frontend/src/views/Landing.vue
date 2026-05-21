@@ -95,12 +95,22 @@
 
     <!-- Footer -->
     <footer class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 border-t border-gray-100">
-      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <img :src="logoUrl" alt="PeaseAI" class="h-8 w-8 rounded-lg" />
-          <span class="text-sm font-semibold text-gray-900">PeaseAI</span>
+      <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div class="flex items-center gap-3">
+            <img :src="logoUrl" alt="PeaseAPI" class="h-8 w-8 rounded-lg" />
+            <span class="text-sm font-semibold text-gray-900">PeaseAPI (豌豆API)</span>
+          </div>
+          <p class="text-sm text-gray-500">&copy; 2026 PeaseAPI Team. All rights reserved.</p>
         </div>
-        <p class="text-sm text-gray-500">&copy; 2026 PeaseAI. All rights reserved.</p>
+        <div class="border-t border-gray-200 pt-6">
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-gray-600">
+            <span>💬 交流与反馈</span>
+            <span>QQ 交流群：10662299</span>
+            <span>问题反馈：<a href="https://www.peaseapi.net" class="text-primary-600 hover:underline">www.peaseapi.net</a></span>
+            <span>商务合作：<a href="mailto:791777@gmail.com" class="text-primary-600 hover:underline">791777@gmail.com</a></span>
+          </div>
+        </div>
       </div>
     </footer>
   </div>

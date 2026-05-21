@@ -89,8 +89,8 @@
             <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
               <td class="px-4 py-3">
                 <div class="flex items-center gap-3">
-                  <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-600">
-                    {{ user.username?.charAt(0).toUpperCase() || 'U' }}
+                  <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-600 font-mono">
+                    {{ user.id || '?' }}
                   </div>
                   <div>
                     <p class="text-sm font-medium text-gray-900">{{ user.username }}</p>
@@ -392,9 +392,19 @@ function formatQuota(quota) {
   return num.toString()
 }
 
-function formatDate(date) {
-  if (!date) return '-'
-  return new Date(date).toLocaleDateString('zh-CN')
+function formatDate(ts) {
+  if (!ts) return '-'
+  // Support both timestamp (int) and ISO string
+  if (typeof ts === 'number') {
+    return new Date(ts * 1000).toLocaleString('zh-CN', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    })
+  }
+  return new Date(ts).toLocaleString('zh-CN', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+  })
 }
 
 function getRoleLabel(role) {

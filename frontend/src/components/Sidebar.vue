@@ -36,7 +36,7 @@
       <!-- Footer -->
       <div class="border-t border-gray-200 p-4">
         <div class="flex items-center gap-3">
-          <img :src="logoUrl" alt="User" class="h-8 w-8 rounded-full bg-gray-200" />
+          <img :src="logoUrl" alt="PeaseAPI User" class="h-8 w-8 rounded-full bg-gray-200" />
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium text-gray-900 truncate">{{ currentUser?.username }}</p>
             <p class="text-xs text-gray-500 truncate">{{ roleLabel }}</p>

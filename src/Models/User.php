@@ -38,6 +38,14 @@ class User extends Model
     public const STATUS_DISABLED = 0;
     public const STATUS_ENABLED = 1;
 
+    public static function create(array $attributes): static
+    {
+        if (!isset($attributes['created_at'])) {
+            $attributes['created_at'] = time();
+        }
+        return parent::create($attributes);
+    }
+
     public static function createRootUser(): static
     {
         $hashedPassword = password_hash('123456', PASSWORD_DEFAULT);

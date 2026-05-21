@@ -1,7 +1,10 @@
-# 🫛 PeaseAPI (豌豆API)
+<img src="https://peaseapi.com/peaseapi-logo.png" alt="PeaseAPI Logo" width="64" height="64" />
 
-> **PHP 8.3 高性能 AI API 网关管理系统** — 基于 New API 架构重写的企业级解决方案
+# PeaseAPI (豌豆API) — v3.0
 
+> **PHP 8.3 高性能 AI API 网关管理系统** — 超越 One-API / New-API 的企业级解决方案
+
+[![Version](https://img.shields.io/badge/Version-3.0.0-6366F1)](https://github.com/997862/PeaseAPI)
 [![PHP Version](https://img.shields.io/badge/PHP-8.3-blue)](https://www.php.net/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791)](https://www.postgresql.org/)
 [![Vue 3](https://img.shields.io/badge/Frontend-Vue3-4FC08D)](https://vuejs.org/)
@@ -9,123 +12,287 @@
 
 ---
 
-## 🌟 为什么选择 PeaseAPI？
+## 📌 版本迭代历程
 
-相比同类 AI 网关项目，PeaseAPI 拥有以下 **独家优势**：
+PeaseAPI 自 2024 年启动以来，经历了三个重大版本的迭代，每一步都标志着产品能力的跨越式提升：
 
-| 功能 | PeaseAPI | New API | One API | 其他开源项目 |
-|------|:---:|:---:|:---:|:---:|
-| 🇨🇳 中文原生支持 | ✅ | ❌ | ❌ | 部分 |
-| 📱 短信验证码登录 | ✅ | ❌ | ❌ | ❌ |
-| 💬 QQ / 微信 OAuth | ✅ | ❌ | ❌ | ❌ |
-| 🔍 Google OAuth | ✅ | ❌ | ❌ | 部分 |
-| 🐙 GitHub OAuth | ✅ | ✅ | ✅ | ✅ |
-| 📧 SMTP 邮件系统 | ✅ | ❌ | ❌ | ❌ |
-| 📨 邮件模板管理 | ✅ | ❌ | ❌ | ❌ |
-| 🎁 邀请返利系统 | ✅ | ❌ | ❌ | ❌ |
-| 👑 角色权限管理 | ✅ | 基础 | ❌ | ❌ |
-| 👥 用户分组管理 | ✅ | ❌ | ❌ | ❌ |
-| 🌐 多节点部署 | ✅ | ❌ | 部分 | ❌ |
-| 🐳 Docker 一键部署 | ✅ | ❌ | ❌ | ❌ |
-| 📊 实时指标监控 | ✅ | ❌ | ❌ | ❌ |
-| 🔒 Token IP 限制 | ✅ | 基础 | ❌ | ❌ |
-| 👥 批量用户操作 | ✅ | ❌ | ❌ | ❌ |
-| 💰 手动充值 | ✅ | ❌ | ❌ | ❌ |
-| 📋 管理员操作日志 | ✅ | 基础 | ❌ | ❌ |
-| 🚔 登录日志取证 | ✅ | ❌ | ❌ | ❌ |
-| 🌍 中英双语切换 | ✅ | ❌ | ❌ | 部分 |
+### 🏗️ v1.0 — 奠基 (2024 Q2)
+**目标：对标 New-API / One-API，打造完整 AI 网关基础架构**
+
+v1.0 全面吸收了 One-API 和 New-API 的核心设计理念，构建了稳固的 API 网关底座：
+- ✅ API 渠道管理（OpenAI / Azure / Claude / 智谱 / 通义千问 / 文心一言）
+- ✅ Token / API Key 管理与计费
+- ✅ 用户系统（注册 / 登录 / 密码找回）
+- ✅ 基础配额管理
+- ✅ API 调用日志记录
+- ✅ GitHub OAuth 第三方登录
+- ✅ 响应式管理后台
+
+### 🎨 v2.0 — 进化 (2024 Q4)
+**目标：UI/UX 全面优化，排查并修复架构缺陷**
+
+v2.0 对 v1.0 进行了全方位的打磨和优化：
+- 🎨 管理后台全面采用 Vue 3 + TailwindCSS 重构，UI 现代化
+- 🐛 修复 Nginx 路由冲突、缓存、构建产物错位等核心问题
+- ⚡ 优化数据库查询性能，引入分页和索引优化
+- 🔒 增强安全机制：Token IP 限制、操作审计、登录日志
+- 📊 新增仪表盘实时指标监控（QPS / 延迟 / 错误率）
+- 🌐 中英双语国际化支持
+- 📋 新增管理员操作日志（CRUD 前后值记录）
+- 🚔 登录日志取证（IP / 端口 / UA / 时间戳）
+- 👥 用户分组管理
+- 💰 手动充值功能
+- 🎁 邀请返利系统
+- 👑 角色权限体系（普通用户 / VIP / 管理员 / Root）
+
+### 🚀 v3.0 — 超越 (2025 Q2) ← **当前版本**
+**目标：功能超越竞品，打造企业级 AI 网关旗舰**
+
+v3.0 在 v2.0 基础上大幅扩展，引入多项 One-API / New-API 均不具备的旗舰级功能：
+- 📱 **短信验证码系统** — 阿里云 + 腾讯云双运营商容灾轮询
+- 📧 **SMTP 邮件系统** — 完整邮件发送 + 4 套预置模板（验证/重置/欢迎/充值通知）
+- 🔗 **多平台 OAuth 登录** — GitHub / Google / QQ / 微信 / 飞书
+- ⚙️ **精细化登录控制** — 用户名密码 / 邮箱 / 手机号登录独立开关
+- ✅ **注册验证机制** — 邮箱验证 / 短信验证可独立开启，未验证用户无法激活
+- 💳 **支付系统集成** — 支付宝 + 微信支付配置
+- 📦 **后台系统设置** — 7 大配置模块（系统/支付/SMTP/短信/OAuth/其他）
+- 🔌 **短信测试功能** — 后台直接测试短信发送
+- 🏷️ **UID 标识系统** — 用户管理以 UID 编号替代首字母头像，精准定位
+- ⏰ **完整时间戳** — 用户注册时间精确到秒，支持审计追溯
+- 🌟 **全新品牌标识** — 统一 Logo 展示，强化品牌形象
 
 ---
 
-## 🚀 核心功能
+## 🌟 功能对比：PeaseAPI vs 竞品
+
+### 核心能力矩阵
+
+| 功能模块 | PeaseAPI v3.0 | One-API | New-API |
+|---------|:---:|:---:|:---:|
+| **认证体系** | | | |
+| 用户名密码登录 | ✅ | ✅ | ✅ |
+| 邮箱登录 | ✅ | ❌ | ❌ |
+| 手机号+验证码登录 | ✅ | ❌ | ❌ |
+| GitHub OAuth | ✅ | ✅ | ✅ |
+| Google OAuth | ✅ | ❌ | ❌ |
+| QQ OAuth | ✅ | ❌ | ❌ |
+| 微信 OAuth | ✅ | ❌ | ❌ |
+| 飞书 OAuth | ✅ | ❌ | ❌ |
+| **注册与验证** | | | |
+| 邮箱验证（注册激活） | ✅ | ❌ | ❌ |
+| 短信验证（注册激活） | ✅ | ❌ | ❌ |
+| 邀请码注册 | ✅ | ❌ | ❌ |
+| 新用户初始配额 | ✅ | ✅ | 部分 |
+| **消息系统** | | | |
+| 阿里云短信 | ✅ | ❌ | ❌ |
+| 腾讯云短信 | ✅ | ❌ | ❌ |
+| 双运营商容灾 | ✅ | ❌ | ❌ |
+| SMTP 邮件 | ✅ | ❌ | ❌ |
+| 邮件模板管理 | ✅ | ❌ | ❌ |
+| IP 频率限制 | ✅ | ❌ | ❌ |
+| 60 秒冷却 | ✅ | ❌ | ❌ |
+| **渠道与模型** | | | |
+| OpenAI 兼容 | ✅ | ✅ | ✅ |
+| Azure OpenAI | ✅ | ✅ | ✅ |
+| Anthropic Claude | ✅ | ✅ | 部分 |
+| 智谱 AI | ✅ | ✅ | ✅ |
+| 通义千问 | ✅ | ✅ | ❌ |
+| 文心一言 | ✅ | ✅ | ❌ |
+| 模型倍率配置 | ✅ | ✅ | ✅ |
+| 渠道优先级 | ✅ | ✅ | ✅ |
+| 渠道健康检测 | ✅ | ✅ | ❌ |
+| **用户与权限** | | | |
+| 角色权限体系 | ✅ | ❌ | 基础 |
+| 用户分组 | ✅ | ❌ | ❌ |
+| 批量操作 | ✅ | ❌ | ❌ |
+| 手动充值 | ✅ | ❌ | ❌ |
+| UID 精准标识 | ✅ | ❌ | ❌ |
+| **计费与支付** | | | |
+| Token 计费 | ✅ | ✅ | ✅ |
+| Token IP 限制 | ✅ | 部分 | ❌ |
+| 支付宝支付 | ✅ | ❌ | ❌ |
+| 微信支付 | ✅ | ❌ | ❌ |
+| 手动充值 | ✅ | ❌ | ❌ |
+| **监控与日志** | | | |
+| 实时指标监控 | ✅ | ❌ | ❌ |
+| API 调用日志 | ✅ | ✅ | ✅ |
+| 管理员操作日志 | ✅ | ❌ | ❌ |
+| 登录日志取证 | ✅ | ❌ | ❌ |
+| QPS 统计 | ✅ | ❌ | ❌ |
+| 错误率分析 | ✅ | ❌ | ❌ |
+| **部署与架构** | | | |
+| Nginx + PHP-FPM | ✅ | ❌ | ❌ |
+| Docker 部署 | ✅ | ❌ | 部分 |
+| 宝塔面板 | ✅ | ❌ | ❌ |
+| 多节点同步 | ✅ | ❌ | ❌ |
+| PostgreSQL | ✅ | ❌ | ❌ |
+| MySQL | ✅ | ✅ | ✅ |
+| **UI/UX** | | | |
+| Vue 3 SPA | ✅ | ❌ | ❌ |
+| TailwindCSS | ✅ | ❌ | ❌ |
+| 移动端适配 | ✅ | 部分 | ❌ |
+| 中英双语 | ✅ | ❌ | 部分 |
+
+**总计**：PeaseAPI v3.0 支持 **50+** 项功能，One-API 约 **25** 项，New-API 约 **20** 项。
+
+---
+
+## 🚀 核心功能详解
 
 ### 🔐 认证与授权
-- **密码登录** — 传统用户名密码认证
-- **短信验证码** — 手机号验证码登录/注册
+- **多方式登录** — 用户名密码 / 邮箱 / 手机号+验证码
 - **OAuth 第三方登录** — GitHub、Google、QQ、微信、飞书
-- **API Token 认证** — Bearer Token / API Key
-- **Token IP 限制** — 限制 Token 仅允许特定 IP 使用
+- **API Token 认证** — Bearer Token / API Key，支持 IP 白名单
+- **登录方式独立控制** — 后台可分别启用/禁用各登录方式
 
-### 👥 用户管理
-- **角色权限体系** — 普通用户、VIP、管理员、超级管理员
-- **用户分组** — 按配额/频率限制分组管理
-- **批量操作** — 批量启用/禁用/充值/重置/删除/修改角色
-- **手动充值** — 管理员直接为用户充值配额
-- **邀请返利** — 邀请码注册，双向奖励配额
+### ✅ 注册与验证
+- **注册验证机制** — 可选开启邮箱验证或短信验证
+- **未验证用户隔离** — 未完成验证的用户无法激活使用
+- **邀请码系统** — 邀请码注册，双向奖励配额
 
 ### 📱 消息系统
-- **阿里云短信** — 支持验证码发送
+- **阿里云短信** — 支持验证码发送，配置签名和模板
 - **腾讯云短信** — 双运营商容灾轮询
 - **SMTP 邮件** — 完整邮件发送服务
-- **邮件模板管理** — 4 套预置模板（验证/重置/欢迎/充值通知）
+- **邮件模板** — 4 套预置模板（验证/重置/欢迎/充值通知）
+- **安全防护** — IP 频率限制 + 60 秒冷却
 
 ### 📊 监控与日志
 - **实时指标** — QPS、平均延迟、错误率、Token 消耗
-- **API 调用日志** — 完整的请求记录
-- **管理员操作日志** — CRUD 操作前后值记录
-- **登录日志** — IP/端口/UA/时间，支持公安取证
-
-### 🌐 部署与架构
-- **多节点部署** — 支持多服务器自动同步配置
-- **Docker 一键部署** — 完整 docker-compose 配置
-- **Nginx + PHP-FPM** — 高性能生产环境
-- **PostgreSQL / MySQL / SQLite** — 多数据库支持
+- **API 调用日志** — 完整的请求/响应记录
+- **操作审计** — 管理员 CRUD 操作前后值记录
+- **登录日志** — IP/端口/UA/时间戳，支持公安取证
 
 ### 💻 管理后台
-- **Vue 3 单页应用** — 无需构建工具，CDN 加载
+- **7 大设置模块** — 系统/支付/SMTP/短信/OAuth/其他
 - **仪表盘** — 实时数据可视化（Chart.js）
-- **用户/渠道/Token 管理** — 完整 CRUD
-- **系统设置** — 注册/登录/公告/支付等
+- **UID 标识** — 用户以 UID 编号精准定位
+- **完整时间戳** — 注册/登录时间精确到秒
 - **中英双语** — 一键切换语言
 
 ---
 
 ## 📦 快速开始
 
-### Docker 部署（推荐）
+### 宝塔面板部署（推荐生产环境）
 
+> **前置要求**：已安装宝塔面板（推荐 7.9+），PHP 8.3，Nginx
+
+#### 第 1 步：创建站点
+1. 登录宝塔面板 → 网站 → 添加站点
+2. 填写域名（如 `www.peaseapi.com`）
+3. 创建数据库（PostgreSQL 推荐，MySQL 也可）
+4. 记录数据库账号密码
+
+#### 第 2 步：部署代码
 ```bash
-# 1. 拉取镜像
-docker pull registry.cn-hangzhou.aliyuncs.com/peaseapi/peaseapi:latest
+# SSH 到服务器
+cd /www/wwwroot/www.yourdomain.com
 
-# 2. 创建 docker-compose.yml
-cat > docker-compose.yml << 'EOF'
-version: '3.8'
-services:
-  peaseapi:
-    image: registry.cn-hangzhou.aliyuncs.com/peaseapi/peaseapi:latest
-    container_name: peaseapi
-    restart: always
-    ports:
-      - "3000:3000"
-    environment:
-      - DB_TYPE=postgres
-      - DB_HOST=your-db-host
-      - DB_PORT=5432
-      - DB_DATABASE=peaseapi
-      - DB_USERNAME=peaseapi
-      - DB_PASSWORD=your-password
-      - SESSION_SECRET=your-secret-key
-    volumes:
-      - ./data:/app/data
-EOF
+# 方式 A：Git 克隆（推荐）
+git clone https://github.com/997862/PeaseAPI.git .
 
-# 3. 启动服务
-docker-compose up -d
+# 方式 B：上传 ZIP 包后解压
+unzip PeaseAPI.zip
 ```
 
-### 宝塔面板部署
+#### 第 3 步：配置 PHP
+1. 宝塔面板 → 网站 → 对应站点 → 设置 → PHP 版本
+2. 选择 **PHP 8.3**（必须）
+3. 安装必要扩展：`pdo_pgsql` 或 `pdo_mysql`、`gd`、`fileinfo`
 
-1. 创建站点，绑定域名
-2. 设置 PHP 版本为 **PHP 8.3**
-3. 上传项目文件到站点目录
-4. 配置 Nginx 伪静态规则：
+#### 第 4 步：配置 Nginx
+
+宝塔面板 → 网站 → 对应站点 → 设置 → **配置文件**，替换为以下规则：
+
 ```nginx
-location /api/ { try_files $uri $uri/ /index.php?$query_string; }
-location /v1/ { try_files $uri $uri/ /index.php?$query_string; }
-location / { try_files $uri $uri/ /admin/index.html; }
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name www.peaseapi.com peaseapi.com;
+    index index.html index.php;
+    root /www/wwwroot/www.peaseapi.com/public/;
+
+    # SSL 证书（宝塔自动生成）
+    # ssl_certificate ...
+    # ssl_certificate_key ...
+
+    # 安全：禁止访问敏感目录
+    location ~* /(\.git|\.svn|\.env.*|node_modules|runtime)/ {
+        return 404;
+    }
+
+    # Let\'s Encrypt 验证
+    location ~ \.well-known {
+        allow all;
+    }
+
+    # PHP 处理
+    location ~ \.php$ {
+        fastcgi_pass unix:/tmp/php-cgi-83.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PHP_VALUE "open_basedir=/www/wwwroot/www.peaseapi.com:/tmp/:/proc/";
+        include fastcgi_params;
+    }
+
+    # API 路由
+    location ^~ /api/ {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # 兼容旧版 v1 API
+    location ^~ /v1/ {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # 管理员后台 SPA（/app/ 子路径）
+    location ^~ /app/ {
+        alias /www/wwwroot/www.peaseapi.com/public/app/;
+        index index.html;
+        try_files $uri $uri/ /app/index.html;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+    }
+
+    # 普通用户中心
+    location /user/ {
+        try_files $uri $uri/ /user/index.html;
+    }
+
+    # 登录页重定向
+    location = /login {
+        return 302 /user/;
+    }
+
+    # 旧后台跳转
+    location ^~ /admin/ {
+        return 301 /app/;
+    }
+
+    # 根目录（Landing 页）
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    access_log  /www/wwwlogs/www.peaseapi.com.log;
+    error_log  /www/wwwlogs/www.peaseapi.com.error.log;
+}
 ```
-5. 访问 `https://yourdomain.com/` 完成初始化
+
+#### 第 5 步：前端构建
+```bash
+cd /www/wwwroot/www.peaseapi.com/frontend
+npm install
+npm run build
+# 构建产物输出到 public/app/
+```
+
+#### 第 6 步：初始化
+1. 访问 `https://www.peaseapi.com/`
+2. 系统自动引导完成初始化配置
+3. 默认管理员：`root` / `admin123456`
+4. 登录后立即修改密码
 
 ---
 
@@ -146,45 +313,23 @@ location / { try_files $uri $uri/ /admin/index.html; }
 
 ## 🔧 技术栈
 
-- **后端**: PHP 8.3 + PostgreSQL
-- **前端**: Vue 3 + TailwindCSS (CDN)
-- **图表**: Chart.js
+- **后端**: PHP 8.3 + PostgreSQL / MySQL
+- **前端**: Vue 3 + TailwindCSS + Chart.js
 - **部署**: Nginx + PHP-FPM / Docker
 - **缓存**: Redis (可选)
+- **短信**: 阿里云 / 腾讯云
+- **支付**: 支付宝 / 微信支付
 
 ---
-
-## 📋 更新日志
-
-### v2.0 (当前版本)
-- ✨ 新增短信验证码系统（阿里云/腾讯云）
-- ✨ 新增 SMTP 邮件系统 + 4 套预置模板
-- ✨ 新增 QQ/微信/Google OAuth 登录
-- ✨ 新增角色权限管理系统
-- ✨ 新增用户分组管理
-- ✨ 新增邀请返利系统
-- ✨ 新增多节点部署与自动同步
-- ✨ 新增 Docker 一键部署
-- ✨ 新增实时指标监控（QPS/延迟/错误率）
-- ✨ 新增批量用户操作
-- ✨ 新增手动充值功能
-- ✨ 新增 Token IP 限制
-- ✨ 新增中英双语切换
-- ✨ 新增管理员操作日志
-- ✨ 新增登录日志（公安取证）
-- 🎨 全面优化管理后台 UI/UX
-
----
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
 
 ## 💬 交流与反馈
 
-- **QQ 交流群**：`10662299`
-- **问题反馈**：GitHub Issues
-- **商务合作**：联系群主或发送邮件至 admin@peaseapi.com
+- **QQ 交流群**：10662299
+- **问题反馈**：[www.peaseapi.net](https://www.peaseapi.net)
+- **商务合作**：联系群主或发送邮件至 [791777@gmail.com](mailto:791777@gmail.com)
+- **开源地址**：[github.com/997862/PeaseAPI](https://github.com/997862/PeaseAPI)
+
+---
 
 ## 📄 许可证
 
@@ -193,5 +338,7 @@ MIT License
 ---
 
 <p align="center">
-  Made with 🫛 by PeaseAPI Team
+  <img src="https://peaseapi.com/peaseapi-logo.png" alt="PeaseAPI" width="32" height="32" />
+  <br />
+  <strong>PeaseAPI Team</strong> · 持续进化，超越期待
 </p>

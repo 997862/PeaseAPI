@@ -5,12 +5,12 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center gap-3">
-            <img :src="logoUrl" alt="PeaseAI" class="h-10 w-10 rounded-xl shadow-lg" />
+            <img :src="logoUrl" alt="PeaseAPI" class="h-10 w-10 rounded-xl shadow-lg" />
             <span class="text-xl font-bold text-gray-900">PeaseAI</span>
           </div>
           <div class="flex items-center gap-4">
-            <router-link to="/login" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition">登录</router-link>
-            <router-link to="/register" class="text-sm font-semibold text-white bg-primary-600 hover:bg-primary-500 px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition">免费注册</router-link>
+            <a href="/user/" class="text-sm font-medium text-gray-600 hover:text-primary-600 transition">登录</a>
+            <a href="/user/register.html" class="text-sm font-semibold text-white bg-primary-600 hover:bg-primary-500 px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition">免费注册</a>
           </div>
         </div>
       </div>
@@ -30,8 +30,8 @@
           统一 API 入口，支持 OpenAI、Claude、Gemini、Qwen、DeepSeek 等十多种主流 AI 模型。<br/>Token 管理、渠道监控、使用统计，一站搞定。
         </p>
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <router-link to="/register" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-white bg-primary-600 hover:bg-primary-500 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">立即开始使用 →</router-link>
-          <router-link to="/login" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition-all">登录 PeaseAI</router-link>
+          <a href="/user/register.html" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-white bg-primary-600 hover:bg-primary-500 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">立即开始使用 →</a>
+          <a href="/user/" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition-all">登录 PeaseAPI</a>
         </div>
       </div>
     </section>
@@ -87,9 +87,9 @@
       <div class="max-w-3xl mx-auto text-center">
         <h2 class="text-3xl font-bold text-white mb-6">准备好开始了吗？</h2>
         <p class="text-lg text-primary-100 mb-10">免费注册，立即体验统一的 AI API 管理能力</p>
-        <router-link to="/register" class="inline-flex items-center px-8 py-4 text-base font-semibold text-primary-600 bg-white hover:bg-primary-50 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+        <a href="/user/register.html" class="inline-flex items-center px-8 py-4 text-base font-semibold text-primary-600 bg-white hover:bg-primary-50 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
           免费注册账号<svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-        </router-link>
+        </a>
       </div>
     </section>
 

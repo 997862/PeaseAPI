@@ -58,7 +58,7 @@
     <div class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-200">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-semibold text-gray-900">最近调用日志</h3>
-        <router-link to="/logs" class="text-sm font-medium text-primary-600 hover:text-primary-500">
+        <router-link to="/dashboard/logs" class="text-sm font-medium text-primary-600 hover:text-primary-500">
           查看全部 →
         </router-link>
       </div>
@@ -144,13 +144,13 @@ const stats = computed(() => {
 
 const quickActions = computed(() => {
   const actions = [
-    { name: 'Token 管理', to: '/tokens', icon: KeyIcon },
-    { name: '日志查看', to: '/logs', icon: LogIcon },
+    { name: 'Token 管理', to: '/dashboard/tokens', icon: KeyIcon },
+    { name: '日志查看', to: '/dashboard/logs', icon: LogIcon },
   ]
   if (isAdmin.value) {
     actions.splice(0, 0,
-      { name: '用户管理', to: '/users', icon: UsersIcon },
-      { name: '渠道管理', to: '/channels', icon: ChannelIcon },
+      { name: '用户管理', to: '/dashboard/users', icon: UsersIcon },
+      { name: '渠道管理', to: '/dashboard/channels', icon: ChannelIcon },
     )
   }
   return actions

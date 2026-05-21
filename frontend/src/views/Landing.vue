@@ -5,11 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 shadow-lg">
-              <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
+            <img src="/peaseapi-logo.png" alt="PeaseAI" class="h-10 w-10 rounded-xl shadow-lg" />
             <span class="text-xl font-bold text-gray-900">PeaseAI</span>
           </div>
           <div class="flex items-center gap-4">
@@ -35,7 +31,7 @@
         </p>
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <router-link to="/register" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-white bg-primary-600 hover:bg-primary-500 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">立即开始使用 →</router-link>
-          <router-link to="/login" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition-all">管理后台登录</router-link>
+          <router-link to="/login" class="w-full sm:w-auto px-8 py-3.5 text-base font-semibold text-gray-700 bg-white hover:bg-gray-50 rounded-xl shadow-md hover:shadow-lg border border-gray-200 transition-all">登录 PeaseAI</router-link>
         </div>
       </div>
     </section>
@@ -101,9 +97,7 @@
     <footer class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 border-t border-gray-100">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
-            <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-          </div>
+          <img src="/peaseapi-logo.png" alt="PeaseAI" class="h-8 w-8 rounded-lg" />
           <span class="text-sm font-semibold text-gray-900">PeaseAI</span>
         </div>
         <p class="text-sm text-gray-500">&copy; 2026 PeaseAI. All rights reserved.</p>

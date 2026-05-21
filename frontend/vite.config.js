@@ -13,7 +13,7 @@ export default defineConfig({
   },
   build: {
     outDir: resolve(__dirname, '../public/app'),
-    emptyOutDir: true,
+    emptyOutDir: false,
     assetsDir: 'assets',
     rollupOptions: {
       output: {

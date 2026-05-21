@@ -4,6 +4,12 @@ import { useAuth } from '@/store/auth'
 const routes = [
   {
     path: '/',
+    name: 'Landing',
+    component: () => import('@/views/Landing.vue'),
+    meta: { requiresAuth: false, title: 'PeaseAPI - AI API 网关管理平台' },
+  },
+  {
+    path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
     meta: { requiresAuth: false, title: '登录' },
@@ -66,7 +72,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory('/app/'),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 

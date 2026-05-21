@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center gap-3">
-            <img src="/peaseapi-logo.png" alt="PeaseAI" class="h-10 w-10 rounded-xl shadow-lg" />
+            <img :src="logoUrl" alt="PeaseAI" class="h-10 w-10 rounded-xl shadow-lg" />
             <span class="text-xl font-bold text-gray-900">PeaseAI</span>
           </div>
           <div class="flex items-center gap-4">
@@ -97,7 +97,7 @@
     <footer class="py-8 px-4 sm:px-6 lg:px-8 bg-gray-50 border-t border-gray-100">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <img src="/peaseapi-logo.png" alt="PeaseAI" class="h-8 w-8 rounded-lg" />
+          <img :src="logoUrl" alt="PeaseAI" class="h-8 w-8 rounded-lg" />
           <span class="text-sm font-semibold text-gray-900">PeaseAI</span>
         </div>
         <p class="text-sm text-gray-500">&copy; 2026 PeaseAI. All rights reserved.</p>
@@ -107,6 +107,7 @@
 </template>
 
 <script setup>
+const logoUrl = '/peaseapi-logo.png'
 const logos = [
   { name: 'OpenAI', file: 'OpenAI.svg' },
   { name: 'Claude', file: 'Claude.svg' },

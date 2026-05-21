@@ -4,7 +4,7 @@
       <!-- Logo -->
       <div class="flex justify-center mb-8">
         <div class="flex items-center gap-3">
-          <img :src="'/peaseapi-logo.png'" alt="PeaseAI" class="h-12 w-12 rounded-xl shadow-lg" />
+          <img :src="logoUrl" alt="PeaseAI" class="h-12 w-12 rounded-xl shadow-lg" />
           <span class="text-2xl font-bold text-gray-900">PeaseAI</span>
         </div>
       </div>
@@ -49,13 +49,13 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuth } from '@/store/auth'
 import { authAPI } from '@/api'
 
 const router = useRouter()
-const route = useRoute()
 const { setToken, setUser } = useAuth()
+const logoUrl = '/peaseapi-logo.png'
 
 const form = reactive({ username: '', password: '' })
 const loading = ref(false)
@@ -71,8 +71,8 @@ async function handleLogin() {
       const { access_token, ...userData } = res.data
       setToken(access_token)
       setUser(userData)
-      const redirect = route.query.redirect || '/dashboard'
-      router.push(redirect)
+      // 登录成功后强制跳转至仪表盘，不再回跳首页
+      router.push('/dashboard')
     } else {
       error.value = res.message || '登录失败'
     }

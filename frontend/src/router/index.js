@@ -3,10 +3,14 @@ import { useAuth } from '@/store/auth'
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
     meta: { requiresAuth: false, title: '登录' },
+  },
+  {
+    path: '/login',
+    redirect: '/',
   },
   {
     path: '/register',
@@ -15,7 +19,7 @@ const routes = [
     meta: { requiresAuth: false, title: '注册' },
   },
   {
-    path: '/',
+    path: '/dashboard',
     component: () => import('@/components/Layout.vue'),
     meta: { requiresAuth: true },
     children: [

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PeaseAPI - 用户中心</title>
+    <title>登录 - PeaseAPI</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.staticfile.org/vue/3.4.21/vue.global.prod.js"></script>
     <script src="https://cdn.staticfile.org/axios/1.6.8/axios.min.js"></script>
@@ -24,158 +24,130 @@
         @keyframes si { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .ts { border-left: 4px solid #10B981; }
         .te { border-left: 4px solid #EF4444; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 50; }
-        .mc { background: white; border-radius: 1rem; padding: 2rem; width: 90%; max-width: 32rem; }
-        .tab { padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; }
+        .oauth-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 0.5rem; border: 1px solid #D1D5DB; background: white; cursor: pointer; transition: all 0.2s; }
+        .oauth-btn:hover { border-color: #6366F1; background: #EEF2FF; transform: translateY(-2px); }
+        .tab { padding: 0.5rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
         .tab.act { background: #6366F1; color: white; }
+        .tab:not(.act) { color: #6B7280; }
+        .tab:not(.act):hover { color: #6366F1; background: #F3F4F6; }
     </style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#6366F1">
 </head>
 <body class="bg-gray-50 text-gray-900">
 <div id="app" v-cloak>
-    <!-- 导航 -->
     <nav class="bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="flex items-center space-x-3">
-                    <span class="text-3xl">🫛</span>
+                    <img src="/peaseapi-logo.png" alt="PeaseAPI Logo" class="h-10 w-10 rounded-xl">
                     <span class="text-xl font-bold gradient-text">PeaseAPI</span>
                 </a>
                 <div class="flex items-center space-x-4">
                     <a href="/" class="text-gray-600 hover:text-indigo-600 transition">首页</a>
-                    <a href="/admin/" class="text-sm text-gray-500 hover:text-gray-700">管理后台</a>
+                    <a href="/user/register.html" class="bp text-sm py-2 px-4">免费注册</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- 未登录：登录/注册 -->
-    <div v-if="!isAuth" class="min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4">
         <div class="card w-full max-w-md p-8">
-            <!-- Tab 切换 -->
-            <div class="flex gap-2 mb-6 bg-gray-100 p-1 rounded-lg">
-                <div class="tab flex-1 text-center" :class="{act: mode==='login'}" @click="mode='login'">登录</div>
-                <div class="tab flex-1 text-center" :class="{act: mode==='register'}" @click="mode='register'">注册</div>
+            <!-- Tabs -->
+            <div class="flex justify-center mb-6 bg-gray-100 rounded-lg p-1">
+                <div class="tab" :class="{ act: loginMethod === 'account' }" @click="loginMethod = 'account'">账号登录</div>
+                <div class="tab" :class="{ act: loginMethod === 'sms' }" @click="loginMethod = 'sms'">手机号登录</div>
             </div>
 
-            <!-- 登录表单 -->
-            <form v-if="mode==='login'" @submit.prevent="doLogin">
-                <div class="mb-4"><label class="block text-sm font-medium mb-2">用户名</label><input v-model="lf.username" type="text" class="inp" required></div>
-                <div class="mb-6"><label class="block text-sm font-medium mb-2">密码</label><input v-model="lf.password" type="password" class="inp" required></div>
-                <button type="submit" :disabled="loading" class="w-full bp py-3"><span v-if="loading">登录中...</span><span v-else>登录</span></button>
-                <div class="mt-4 text-center"><a href="#" @click.prevent="showReset=true" class="text-indigo-600 hover:underline text-sm">忘记密码？</a></div>
-            </form>
-
-            <!-- 注册表单 -->
-            <form v-if="mode==='register'" @submit.prevent="doReg">
-                <div class="mb-4"><label class="block text-sm font-medium mb-2">用户名</label><input v-model="rf.username" type="text" class="inp" maxlength="20" required></div>
-                <div class="mb-4"><label class="block text-sm font-medium mb-2">密码</label><input v-model="rf.password" type="password" class="inp" minlength="8" required></div>
-                <div class="mb-6"><label class="block text-sm font-medium mb-2">邮箱（选填）</label><input v-model="rf.email" type="email" class="inp"></div>
-                <button type="submit" :disabled="loading" class="w-full bp py-3"><span v-if="loading">注册中...</span><span v-else>注册</span></button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 重置密码 -->
-    <div v-if="showReset" class="modal" @click.self="showReset=false">
-        <div class="mc">
-            <h2 class="text-xl font-bold mb-4">重置密码</h2>
-            <form @submit.prevent="doReset">
-                <div class="mb-6"><label class="block text-sm font-medium mb-2">邮箱</label><input v-model="pf.email" type="email" class="inp" required></div>
-                <div class="flex gap-3"><button type="submit" class="flex-1 bp">发送</button><button type="button" @click="showReset=false" class="flex-1 bs">取消</button></div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 已登录：用户中心 -->
-    <div v-if="isAuth" class="max-w-7xl mx-auto px-4 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            <!-- 侧边栏 -->
-            <aside class="lg:col-span-1">
-                <div class="card p-6">
-                    <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg mr-3">{{ uInit }}</div>
-                        <div><p class="font-semibold">{{ uName }}</p><p class="text-sm text-gray-500">{{ uRole }}</p></div>
+            <!-- Account Login -->
+            <div v-if="loginMethod === 'account'">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">欢迎回来</h2>
+                    <p class="text-gray-500 mt-2">登录您的 PeaseAPI 账号</p>
+                </div>
+                <form @submit.prevent="doLogin">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">用户名</label>
+                        <input v-model="lf.username" type="text" class="inp" required autofocus placeholder="请输入用户名">
                     </div>
-                    <nav class="space-y-1">
-                        <a @click="pg='dashboard'" class="block px-3 py-2 rounded-lg cursor-pointer" :class="pg==='dashboard'?'bg-indigo-50 text-indigo-600':'text-gray-600 hover:bg-gray-50'">📊 仪表盘</a>
-                        <a @click="pg='tokens'" class="block px-3 py-2 rounded-lg cursor-pointer" :class="pg==='tokens'?'bg-indigo-50 text-indigo-600':'text-gray-600 hover:bg-gray-50'">🔑 Token</a>
-                        <a @click="pg='logs'" class="block px-3 py-2 rounded-lg cursor-pointer" :class="pg==='logs'?'bg-indigo-50 text-indigo-600':'text-gray-600 hover:bg-gray-50'">📋 日志</a>
-                        <a @click="pg='recharge'" class="block px-3 py-2 rounded-lg cursor-pointer" :class="pg==='recharge'?'bg-indigo-50 text-indigo-600':'text-gray-600 hover:bg-gray-50'">💳 充值</a>
-                        <a @click="pg='profile'" class="block px-3 py-2 rounded-lg cursor-pointer" :class="pg==='profile'?'bg-indigo-50 text-indigo-600':'text-gray-600 hover:bg-gray-50'">⚙️ 设置</a>
-                    </nav>
-                    <button @click="logout" class="w-full mt-6 bs text-sm">退出登录</button>
-                </div>
-            </aside>
-
-            <!-- 主内容 -->
-            <main class="lg:col-span-3">
-                <!-- 仪表盘 -->
-                <div v-if="pg==='dashboard'">
-                    <h2 class="text-2xl font-bold mb-6">仪表盘</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="card p-6"><p class="text-gray-500 text-sm">剩余配额</p><p class="text-3xl font-bold mt-2 text-indigo-600">{{ fq(user?.quota||0) }}</p></div>
-                        <div class="card p-6"><p class="text-gray-500 text-sm">已用配额</p><p class="text-3xl font-bold mt-2 text-green-600">{{ fq(user?.used_quota||0) }}</p></div>
-                        <div class="card p-6"><p class="text-gray-500 text-sm">请求次数</p><p class="text-3xl font-bold mt-2 text-purple-600">{{ stats.total||0 }}</p></div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">密码</label>
+                        <input v-model="lf.password" type="password" class="inp" required placeholder="请输入密码">
                     </div>
-                    <div class="card p-6"><h3 class="font-semibold mb-4">最近使用</h3><p class="text-gray-500">暂无数据</p></div>
-                </div>
+                    <div class="flex justify-between items-center mb-6">
+                        <label class="flex items-center text-sm text-gray-600">
+                            <input type="checkbox" v-model="lf.remember" class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            记住我
+                        </label>
+                        <a href="javascript:void(0)" class="text-sm text-indigo-600 hover:underline">忘记密码？</a>
+                    </div>
+                    <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
+                        <span v-if="loading">登录中...</span>
+                        <span v-else>登录</span>
+                    </button>
+                </form>
+            </div>
 
-                <!-- Token -->
-                <div v-if="pg==='tokens'">
-                    <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">Token 管理</h2><button @click="showTM=true;tF={name:''}" class="bp">+ 创建</button></div>
-                    <div class="card overflow-hidden"><table v-if="tokens.length" class="w-full"><thead><tr class="bg-gray-50"><th class="p-4 text-left text-sm font-semibold text-gray-600">名称</th><th class="p-4 text-left text-sm font-semibold text-gray-600">Key</th><th class="p-4 text-left text-sm font-semibold text-gray-600">状态</th><th class="p-4 text-left text-sm font-semibold text-gray-600">操作</th></tr></thead><tbody><tr v-for="t in tokens" :key="t.id" class="border-t"><td class="p-4">{{ t.name }}</td><td class="p-4 font-mono text-sm">{{ mK(t.key) }}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium" :class="t.status===1?'bg-green-100 text-green-700':'bg-red-100 text-red-700'">{{ t.status===1?'启用':'禁用' }}</span></td><td class="p-4"><button @click="copyT(t)" class="text-indigo-600 hover:underline text-sm mr-3">复制</button><button @click="delT(t)" class="text-red-600 hover:underline text-sm">删除</button></td></tr></tbody></table><div v-else class="text-center py-12 text-gray-500">暂无 Token，点击创建</div></div>
+            <!-- SMS Login -->
+            <div v-if="loginMethod === 'sms'">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">手机快捷登录</h2>
+                    <p class="text-gray-500 mt-2">输入手机号获取验证码</p>
                 </div>
-
-                <!-- 日志 -->
-                <div v-if="pg==='logs'">
-                    <h2 class="text-2xl font-bold mb-6">调用日志</h2>
-                    <div class="card overflow-hidden"><table v-if="logs.length" class="w-full"><thead><tr class="bg-gray-50"><th class="p-4 text-left text-sm font-semibold text-gray-600">时间</th><th class="p-4 text-left text-sm font-semibold text-gray-600">模型</th><th class="p-4 text-left text-sm font-semibold text-gray-600">Prompt</th><th class="p-4 text-left text-sm font-semibold text-gray-600">Completion</th><th class="p-4 text-left text-sm font-semibold text-gray-600">配额</th></tr></thead><tbody><tr v-for="l in logs" :key="l.id" class="border-t"><td class="p-4 text-sm">{{ fD(l.created_at) }}</td><td class="p-4 font-mono text-sm">{{ l.model_name }}</td><td class="p-4">{{ l.prompt_tokens||0 }}</td><td class="p-4">{{ l.completion_tokens||0 }}</td><td class="p-4">{{ fq(l.quota) }}</td></tr></tbody></table><div v-else class="text-center py-12 text-gray-500">暂无日志</div></div>
-                </div>
-
-                <!-- 充值 -->
-                <div v-if="pg==='recharge'">
-                    <h2 class="text-2xl font-bold mb-6">在线充值</h2>
-                    <div class="card p-6 mb-6">
-                        <h3 class="font-semibold mb-4">选择充值金额</h3>
-                        <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-6">
-                            <button v-for="a in [10,50,100,200,500]" :key="a" @click="rcAmount=a" class="py-3 rounded-lg border-2 font-semibold" :class="rcAmount===a?'border-indigo-600 bg-indigo-50 text-indigo-600':'border-gray-200 hover:border-gray-300'">￥{{ a }}</button>
-                        </div>
-                        <div class="mb-4"><label class="block text-sm font-medium mb-2">自定义金额</label><input v-model.number="rcAmount" type="number" class="inp" min="1" step="1"></div>
-                        <div class="flex gap-4">
-                            <button @click="pay('alipay')" class="flex-1 bp py-3">支付宝支付</button>
-                            <button @click="pay('wechat')" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700">微信支付</button>
+                <form @submit.prevent="doSmsLogin">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">手机号</label>
+                        <input v-model="sf.phone" type="text" class="inp" required placeholder="请输入11位手机号" maxlength="11">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium mb-2">验证码</label>
+                        <div class="flex gap-3">
+                            <input v-model="sf.code" type="text" class="inp flex-1" required placeholder="6位验证码" maxlength="6">
+                            <button type="button" @click="sendSms" :disabled="smsCountdown > 0 || !isValidPhone" class="bp whitespace-nowrap px-4">
+                                <span v-if="smsCountdown > 0">{{ smsCountdown }}s</span>
+                                <span v-else>获取验证码</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="card overflow-hidden"><h3 class="p-6 font-semibold border-b">充值记录</h3><table v-if="topups.length" class="w-full"><thead><tr class="bg-gray-50"><th class="p-4 text-left text-sm font-semibold text-gray-600">订单号</th><th class="p-4 text-left text-sm font-semibold text-gray-600">金额</th><th class="p-4 text-left text-sm font-semibold text-gray-600">配额</th><th class="p-4 text-left text-sm font-semibold text-gray-600">状态</th><th class="p-4 text-left text-sm font-semibold text-gray-600">时间</th></tr></thead><tbody><tr v-for="t in topups" :key="t.id" class="border-t"><td class="p-4 font-mono text-sm">{{ t.order_no||t.id }}</td><td class="p-4">￥{{ t.amount||0 }}</td><td class="p-4">{{ fq(t.quota) }}</td><td class="p-4"><span class="px-2 py-1 rounded-full text-xs font-medium" :class="t.status===1?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700'">{{ t.status===1?'已支付':'待支付' }}</span></td><td class="p-4 text-sm">{{ fD(t.created_at) }}</td></tr></tbody></table><div v-else class="text-center py-12 text-gray-500">暂无记录</div></div>
-                </div>
+                    <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
+                        <span v-if="loading">登录中...</span>
+                        <span v-else>登录</span>
+                    </button>
+                </form>
+            </div>
 
-                <!-- 设置 -->
-                <div v-if="pg==='profile'">
-                    <h2 class="text-2xl font-bold mb-6">个人设置</h2>
-                    <div class="card p-6">
-                        <div class="mb-4"><label class="block text-sm font-medium mb-2">用户名</label><input v-model="user.username" type="text" class="inp" disabled></div>
-                        <div class="mb-4"><label class="block text-sm font-medium mb-2">显示名称</label><input v-model="user.display_name" type="text" class="inp" maxlength="20" placeholder="输入显示名称"></div>
-                        <div class="mb-4"><label class="block text-sm font-medium mb-2">邮箱</label><input v-model="user.email" type="email" class="inp"></div>
-                        <div class="mb-6"><label class="block text-sm font-medium mb-2">新密码（留空不修改）</label><input v-model="newPwd" type="password" class="inp" minlength="8"></div>
-                        <button @click="saveProfile" class="bp">保存修改</button>
-                    </div>
+            <!-- OAuth -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+                    <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">其他登录方式</span></div>
                 </div>
-            </main>
+                <div class="mt-4 flex justify-center space-x-3">
+                    <button class="oauth-btn" @click="oauthLogin('github')" title="GitHub 登录">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    </button>
+                    <button class="oauth-btn" @click="oauthLogin('google')" title="Google 登录">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    </button>
+                    <button class="oauth-btn" @click="oauthLogin('qq')" title="QQ 登录">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#12B7F5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+                    </button>
+                    <button class="oauth-btn" @click="oauthLogin('wechat')" title="微信登录">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="#07C160"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.35 3.947c-3.568 0-6.464 2.426-6.464 5.42 0 2.993 2.896 5.42 6.464 5.42.773 0 1.513-.116 2.207-.328a.642.642 0 01.532.073l1.412.826a.242.242 0 00.124.04c.119 0 .215-.098.215-.218 0-.054-.021-.106-.035-.159l-.29-1.094a.437.437 0 01.158-.494C21.07 18.522 22 16.853 22 15.358c0-2.994-2.896-5.42-6.464-5.42h-.588zm-1.78 2.735c.477 0 .864.394.864.878a.872.872 0 01-.864.878.872.872 0 01-.864-.878c0-.484.387-.878.864-.878zm3.56 0c.477 0 .864.394.864.878a.872.872 0 01-.864.878.872.872 0 01-.864-.878c0-.484.387-.878.864-.878z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center text-sm text-gray-500">
+                还没有账号？<a href="/user/register.html" class="text-indigo-600 hover:underline font-medium">免费注册</a>
+            </div>
         </div>
     </div>
 
-    <!-- Token 创建弹窗 -->
-    <div v-if="showTM" class="modal" @click.self="showTM=false">
-        <div class="mc">
-            <h2 class="text-xl font-bold mb-4">创建 Token</h2>
-            <form @submit.prevent="saveT">
-                <div class="mb-4"><label class="block text-sm font-medium mb-2">名称</label><input v-model="tF.name" type="text" class="inp" required></div>
-                <div class="flex gap-3"><button type="submit" class="flex-1 bp">创建</button><button type="button" @click="showTM=false" class="flex-1 bs">取消</button></div>
-            </form>
-        </div>
+    <div v-if="toast.show" class="toast" :class="toast.type==='success'?'ts':'te'">
+        <p>{{ toast.message }}</p>
     </div>
-
-    <div v-if="toast.show" class="toast" :class="toast.type==='success'?'ts':'te'"><p>{{ toast.message }}</p></div>
 </div>
 
 <script>
@@ -185,72 +157,77 @@ const api = axios.create({ withCredentials: true, baseURL: '/api' });
 createApp({
     data() {
         return {
-            isAuth: false, mode: 'login', pg: 'dashboard', user: null, loading: false,
-            lf: { username: '', password: '' }, rf: { username: '', password: '', email: '' }, pf: { email: '' },
-            showReset: false, showTM: false,
-            tokens: [], logs: [], topups: [], stats: {},
-            tF: { name: '' }, rcAmount: 10, newPwd: '',
+            loginMethod: 'account',
+            lf: { username: '', password: '', remember: false },
+            sf: { phone: '', code: '' },
+            loading: false,
+            smsCountdown: 0,
+            smsTimer: null,
+            smsEnabled: false,
             toast: { show: false, message: '', type: 'success' }
         }
     },
     computed: {
-        uInit() { return this.user ? this.user.username.charAt(0).toUpperCase() : 'U'; },
-        uName() { return this.user ? (this.user.display_name || this.user.username) : ''; },
-        uRole() { return this.user ? '普通用户' : ''; }
+        isValidPhone() {
+            return /^1[3-9]\d{9}$/.test(this.sf.phone);
+        }
     },
     mounted() {
-        this.checkAuth();
+        this.checkSmsStatus();
+    },
+    beforeUnmount() {
+        if (this.smsTimer) clearInterval(this.smsTimer);
     },
     methods: {
-        async checkAuth() {
-            try {
-                const r = await api.get('/user/self');
-                if (r.data.success) { this.isAuth = true; this.user = r.data.data; this.loadDashboard(); }
-            } catch (e) { this.isAuth = false; }
-        },
-        async req(url, data) {
-            try { const r = data ? await api.post(url, data) : await api.get(url); if (r.data.success) return r.data.data; this.msg(r.data.message || '失败', 'error'); }
-            catch (e) { this.msg(e.response?.data?.message || '网络错误', 'error'); }
-            return null;
-        },
         msg(m, t = 'success') { this.toast = { show: true, message: m, type: t }; setTimeout(() => this.toast.show = false, 3000); },
-        fq(q) { return (!q && q !== 0) ? '0' : (q / 500000).toFixed(2); },
-        fD(ts) { return ts ? new Date(ts * 1000).toLocaleString('zh-CN') : '-'; },
-        mK(k) { return (!k || k.length < 12) ? '****' : k.substring(0, 8) + '...' + k.substring(k.length - 4); },
+        async checkSmsStatus() {
+            try {
+                const r = await api.get('/sms/status');
+                if (r.data.success) this.smsEnabled = r.data.data.enabled;
+            } catch(e) {}
+        },
+        async sendSms() {
+            if (!this.isValidPhone) { this.msg('请输入正确的手机号', 'error'); return; }
+            try {
+                const r = await api.post('/sms/send-code', { phone: this.sf.phone, type: 'login' });
+                if (r.data.success) {
+                    this.msg('验证码已发送');
+                    this.smsCountdown = 60;
+                    this.smsTimer = setInterval(() => {
+                        this.smsCountdown--;
+                        if (this.smsCountdown <= 0) clearInterval(this.smsTimer);
+                    }, 1000);
+                }
+            } catch (e) { this.msg(e.response?.data?.message || '发送失败', 'error'); }
+        },
         async doLogin() {
             this.loading = true;
-            try { const r = await api.post('/user/login', this.lf); if (r.data.success) { this.isAuth = true; this.user = r.data.data; this.msg('登录成功'); this.loadDashboard(); } }
-            catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
+            try {
+                const r = await api.post('/user/login', { username: this.lf.username, password: this.lf.password });
+                if (r.data.success) {
+                    sessionStorage.setItem('access_token', r.data.data.token);
+                    this.msg('登录成功，正在跳转...');
+                    setTimeout(() => { window.location.href = '/user/'; }, 800);
+                }
+            } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
             this.loading = false;
         },
-        async doReg() {
-            try { const r = await api.post('/user/register', this.rf); if (r.data.success) { this.msg('注册成功'); this.mode = 'login'; } }
-            catch (e) { this.msg(e.response?.data?.message || '注册失败', 'error'); }
-        },
-        async doReset() { try { await api.post('/password/reset', this.pf); this.showReset = false; this.msg('已发送'); } catch (e) { this.msg(e.response?.data?.message || '失败', 'error'); } },
-        logout() { this.isAuth = false; this.user = null; api.post('/user/logout'); },
-        async loadDashboard() {
-            this.req('/user/dashboard').then(r => { if (r) this.stats = r; });
-            this.req('/token/self').then(r => { if (r) this.tokens = r.items || []; });
-            this.req('/log/self').then(r => { if (r) this.logs = r.items || []; });
-            this.req('/topup/self').then(r => { if (r) this.topups = r.items || []; });
-        },
-        async saveT() { try { await api.post('/token/self', { name: this.tF.name, unlimited_quota: true }); this.msg('创建成功'); this.showTM = false; this.loadDashboard(); } catch (e) { this.msg(e.response?.data?.message || '失败', 'error'); } },
-        async copyT(t) { try { await navigator.clipboard.writeText(t.key); this.msg('已复制'); } catch (e) { this.msg('复制失败', 'error'); } },
-        async delT(t) { if (!confirm('删除 ' + t.name + '?')) return; try { await api.delete('/token/self/' + t.id); this.msg('已删除'); this.loadDashboard(); } catch (e) { this.msg('失败', 'error'); } },
-        async pay(method) {
+        async doSmsLogin() {
+            if (!this.isValidPhone) { this.msg('请输入正确的手机号', 'error'); return; }
+            if (!this.sf.code) { this.msg('请输入验证码', 'error'); return; }
+            this.loading = true;
             try {
-                const r = await api.post('/payment/order', { amount: this.rcAmount, method: method });
-                if (r.data.success) { this.msg('订单创建成功，请完成支付'); this.loadDashboard(); }
-            } catch (e) { this.msg(e.response?.data?.message || '创建订单失败', 'error'); }
+                const r = await api.post('/user/sms-login', { phone: this.sf.phone, code: this.sf.code });
+                if (r.data.success) {
+                    sessionStorage.setItem('access_token', r.data.data.token);
+                    this.msg('登录成功，正在跳转...');
+                    setTimeout(() => { window.location.href = '/user/'; }, 800);
+                }
+            } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
+            this.loading = false;
         },
-        async saveProfile() {
-            try {
-                const body = { display_name: this.user.display_name, email: this.user.email };
-                if (this.newPwd) { body.old_password = this.newPwd; body.new_password = this.newPwd; }
-                await api.put('/user/self', body);
-                this.msg('保存成功'); this.newPwd = '';
-            } catch (e) { this.msg(e.response?.data?.message || '失败', 'error'); }
+        oauthLogin(provider) {
+            window.location.href = `/api/oauth/${provider}`;
         }
     }
 }).mount('#app');

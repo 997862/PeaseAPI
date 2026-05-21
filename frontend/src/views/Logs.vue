@@ -163,7 +163,7 @@ async function loadApiLogs() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.success) logs.value = json.data?.items || json.data || []
+    if (json.success) logs.value = json.data?.rows || json.data?.items || json.data || []
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
@@ -177,7 +177,7 @@ async function loadLoginLogs() {
     })
     const json = await res.json()
     if (json.success) {
-      loginLogs.value = json.data?.items || json.data || []
+      loginLogs.value = json.data?.rows || json.data?.items || json.data || []
       // 批量解析 IP
       await resolveIPs()
     }
@@ -186,7 +186,7 @@ async function loadLoginLogs() {
 }
 
 async function resolveIPs() {
-  const ips = [...new Set(loginLogs.value.map(l => l.login_ip || l.ip).filter(Boolean))]
+  const ips = [...new Set((loginLogs.value || []).map(l => l.login_ip || l.ip).filter(Boolean))]
   if (ips.length === 0) return
   
   const uncached = ips.filter(ip => ipCache.value[ip] === undefined)
@@ -217,7 +217,7 @@ async function loadAdminLogs() {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
-    if (json.success) adminLogs.value = json.data?.items || json.data || []
+    if (json.success) adminLogs.value = json.data?.rows || json.data?.items || json.data || []
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }

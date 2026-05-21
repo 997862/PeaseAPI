@@ -116,7 +116,7 @@ export const tokenAPI = {
 // Log APIs
 // ==========================================
 export const logAPI = {
-  list: (params) => api.get('/api/log', { params }),
+  list: (params) => api.get('/api/logs', { params }),
   stat: (params) => api.get('/api/log/stat', { params }),
   search: (params) => api.get('/api/log/search', { params }),
   // API call logs

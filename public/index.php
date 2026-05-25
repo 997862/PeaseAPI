@@ -165,101 +165,24 @@ $router->get('/api/channel/test', withAdminAuth(fn($req) => $channelController->
 
 // Admin: Tokens
 $router->get('/api/tokens', withAdminAuth(fn($req) => $tokenController->list($req)));
-$router->get('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->get($req)));
 $router->post('/api/token', withAdminAuth(fn($req) => $tokenController->create($req)));
-$router->put('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->update($req)));
-$router->delete('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->delete($req)));
 $router->post('/api/token/batch', withAdminAuth(fn($req) => $tokenController->batchDelete($req)));
 $router->post('/api/token/batch/status', withAdminAuth(fn($req) => $tokenController->batchUpdateStatus($req)));
-
-// User: Own Tokens (普通用户查看/创建自己的 Token)
 $router->get('/api/token/self', withAuth(fn($req) => $tokenController->list($req)));
 $router->post('/api/token/self', withAuth(fn($req) => $tokenController->create($req)));
+$router->get('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->get($req)));
+$router->put('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->update($req)));
+$router->delete('/api/token/{id}', withAdminAuth(fn($req) => $tokenController->delete($req)));
 $router->delete('/api/token/self/{id}', withAuth(fn($req) => $tokenController->delete($req)));
 
 // Admin: Logs
 $router->get('/api/logs', withAdminAuth(fn($req) => $logController->list($req)));
-$router->get('/api/log/{id}', withAdminAuth(fn($req) => $logController->get($req)));
-$router->delete('/api/log/{id}', withAdminAuth(fn($req) => $logController->delete($req)));
 $router->post('/api/logs/clear', withAdminAuth(fn($req) => $logController->clear($req)));
 $router->get('/api/logs/stats', withAdminAuth(fn($req) => $logController->stats($req)));
-
-// Admin: Options (System Settings)
-$router->get('/api/options', withAdminAuth(fn($req) => $optionController->list($req)));
-$router->get('/api/option/{key}', withAdminAuth(fn($req) => $optionController->get($req)));
-$router->put('/api/option', withAdminAuth(fn($req) => $optionController->update($req)));
-$router->post('/api/options/batch', withAdminAuth(fn($req) => $optionController->batchUpdate($req)));
-
-// Admin: Groups
-$router->get('/api/groups', withAdminAuth(fn($req) => $groupController->list($req)));
-$router->post('/api/groups', withAdminAuth(fn($req) => $groupController->update($req)));
-
-// Admin: Models
-$router->get('/api/models/list', withAdminAuth(fn($req) => $modelController->list($req)));
-$router->get('/api/model/{model}', withAdminAuth(fn($req) => $modelController->getConfig($req)));
-$router->put('/api/model', withAdminAuth(fn($req) => $modelController->updateConfig($req)));
-$router->get('/api/models/ratios', withAdminAuth(fn($req) => $modelController->getRatios($req)));
-$router->post('/api/models/ratios', withAdminAuth(fn($req) => $modelController->updateRatios($req)));
-$router->post('/api/model/test', withAdminAuth(fn($req) => $modelController->test($req)));
-
-// Admin: Redemptions
-$router->get('/api/redemptions', withAdminAuth(fn($req) => $redemptionController->list($req)));
-$router->post('/api/redemptions', withAdminAuth(fn($req) => $redemptionController->create($req)));
-$router->delete('/api/redemption/{id}', withAdminAuth(fn($req) => $redemptionController->delete($req)));
-$router->post('/api/redemptions/search', withAdminAuth(fn($req) => $redemptionController->search($req)));
-
-// Admin: Topups
-$router->get('/api/topups', withAdminAuth(fn($req) => $topupController->list($req)));
-$router->post('/api/topups', withAdminAuth(fn($req) => $topupController->create($req)));
-
-// User: Logs (own logs)
 $router->get('/api/log/self', withAuth(fn($req) => $logController->list($req)));
-
-// User: Redemption
-$router->post('/api/user/redeem', withAuth(fn($req) => $redemptionController->redeem($req)));
-
-// User: Topups (own topups)
-$router->get('/api/topup/self', withAuth(fn($req) => $topupController->getUserTopups($req)));
-
-// Chat
-$router->get('/api/chat', withAuth(fn($req) => $chatController->index($req)));
-$router->post('/api/chat/send', withAuth(fn($req) => $chatController->sendMessage($req)));
-
-// OAuth
-$router->get('/api/oauth/github', fn($req) => $oAuthController->github($req));
-$router->get('/api/oauth/lark', fn($req) => $oAuthController->lark($req));
-$router->get('/api/oauth/google', fn($req) => $oAuthController->google($req));
-$router->get('/api/oauth/qq', fn($req) => $oAuthController->qq($req));
-$router->get('/api/oauth/wechat', fn($req) => $oAuthController->wechat($req));
-
-// Password Reset
-$router->post('/api/password/reset', fn($req) => $passwordController->reset($req));
-$router->post('/api/password/reset/confirm', fn($req) => $passwordController->confirm($req));
-
-// User Dashboard
-$router->get('/api/user/dashboard', withAuth(fn($req) => $logController->stats($req)));
-
-// Billing
-$router->get('/api/billing/report', withAdminAuth(fn($req) => $billingController->report($req)));
-
-// Payment
-$router->get('/api/payment/config', withAdminAuth(fn($req) => $paymentController->getConfig($req)));
-$router->put('/api/payment/config', withAdminAuth(fn($req) => $paymentController->saveConfig($req)));
-$router->post('/api/payment/order', fn($req) => $paymentController->createOrder($req));
-$router->post('/api/payment/notify', fn($req) => $paymentController->notify($req));
-
-// SMS (public for sending/verifying codes)
-$router->get('/api/sms/status', fn($req) => Response::success(['enabled' => \NewApi\Models\Option::getBool('SmsEnabled', false)]));
-$router->post('/api/sms/send-code', fn($req) => $smsController->sendCode($req));
-$router->post('/api/sms/verify-code', fn($req) => $smsController->verifyCode($req));
-
-// SMS config (admin only)
-$router->get('/api/sms/config', withAdminAuth(fn($req) => $smsController->getConfig($req)));
-$router->post('/api/sms/config', withAdminAuth(fn($req) => $smsController->saveConfig($req)));
-$router->post('/api/sms/test-send', withAdminAuth(fn($req) => $smsController->testSend($req)));
-
-// Login logs (admin only - for police evidence)
 $router->get('/api/login-logs', withAdminAuth(fn($req) => $loginLogController->list($req)));
+$router->get('/api/log/{id}', withAdminAuth(fn($req) => $logController->get($req)));
+$router->delete('/api/log/{id}', withAdminAuth(fn($req) => $logController->delete($req)));
 
 // Admin operation logs
 $router->get('/api/admin-logs', withAdminAuth(fn($req) => $adminLogController->list($req)));

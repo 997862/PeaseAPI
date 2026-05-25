@@ -14,9 +14,12 @@ class LogController
         $userId = $request->getAttribute('user_id');
         if (!$userId) return Response::error('Unauthorized', 401);
         $user = User::find($userId);
-        if (!$user || $user->role < ROLE_ADMIN_USER) {
-            return Response::error('Admin access required', 403);
+        if (!$user) {
+            return Response::error('User not found', 404);
         }
+        
+        // 管理员可以查看所有日志，普通用户只能查看自己的日志
+        $isAdmin = $user->role >= ROLE_ADMIN_USER;
 
         $page = (int) $request->query('p', 1);
         $perPage = (int) $request->query('per_page', 10);

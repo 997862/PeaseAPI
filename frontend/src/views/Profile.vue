@@ -356,14 +356,28 @@ async function loadOAuthStatus() {
 async function loadApiKeys() {
   try {
     const token = sessionStorage.getItem('access_token')
-    const res = await fetch('/api/token/self', { headers: { 'Authorization': `Bearer ${token}` } })
+    if (!token) {
+      console.warn('No access token found, skipping API key load')
+      apiKeys.value = []
+      return
+    }
+    const res = await fetch('/api/token/self', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
     const json = await res.json()
     if (json.success && json.data) {
       // TokenController 返回 {items: [...], total, page, ...}
       apiKeys.value = json.data.items || json.data.rows || []
+    } else {
+      console.warn('API returned unsuccessful response:', json)
+      apiKeys.value = []
     }
   } catch (e) {
     console.error('Failed to load API keys:', e)
+    apiKeys.value = []
   }
 }
 
@@ -371,11 +385,18 @@ async function generateKey() {
   saving.value = true
   try {
     const token = sessionStorage.getItem('access_token')
+    if (!token) {
+      alert('请先登录')
+      return
+    }
     const res = await fetch('/api/token/self', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: '默认 Key', unlimited_quota: true })
     })
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
     const json = await res.json()
     if (json.success) {
       alert('Key 生成成功！请复制并妥善保管')

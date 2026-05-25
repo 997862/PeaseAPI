@@ -2,13 +2,13 @@
   <div class="space-y-6">
     <div>
       <h2 class="text-xl font-bold text-gray-900">日志查看</h2>
-      <p class="mt-1 text-sm text-gray-500">查看 API 调用、登录和操作日志</p>
+      <p class="mt-1 text-sm text-gray-500">查看 API 调用和登录日志</p>
     </div>
 
     <!-- Tabs -->
     <div class="border-b border-gray-200">
       <nav class="-mb-px flex space-x-8">
-        <button v-for="tab in tabs" :key="tab.key"
+        <button v-for="tab in visibleTabs" :key="tab.key"
           @click="switchTab(tab.key)"
           :class="[activeTab === tab.key ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
           {{ tab.name }}
@@ -19,7 +19,7 @@
     <!-- API Logs -->
     <div v-if="activeTab === 'api'" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
       <div class="p-4 border-b border-gray-200 flex flex-wrap items-center gap-3">
-        <input v-model="apiSearch" type="text" placeholder="搜索模型或用户名..." class="flex-1 min-w-[200px] rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" @keyup.enter="loadApiLogs" />
+        <input v-model="apiSearch" type="text" placeholder="搜索模型..." class="flex-1 min-w-[200px] rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" @keyup.enter="loadApiLogs" />
         <button @click="loadApiLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
       </div>
       <table class="min-w-full divide-y divide-gray-200">
@@ -65,17 +65,17 @@
           <tr v-if="loading"><td colspan="5" class="py-8 text-center text-gray-500">加载中...</td></tr>
           <tr v-else-if="loginLogs.length === 0"><td colspan="5" class="py-8 text-center text-gray-500">暂无登录日志</td></tr>
           <tr v-for="l in loginLogs" :key="l.id" class="hover:bg-gray-50">
-            <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{{ fmtTime(l.login_time || l.created_at) }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{{ fmtTime(l.login_time) }}</td>
             <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ l.username || '-' }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ l.login_ip || l.ip || '-' }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ getLocation(l.login_ip || l.ip) }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500 truncate max-w-[200px]" :title="l.user_agent || ''">{{ l.user_agent || '-' }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ l.ip || '-' }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ getLocation(l.ip) }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500 truncate max-w-[200px]" :title="l.user_agent || ''">{{ formatDevice(l.user_agent) }}</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Admin Logs -->
+    <!-- Admin Logs (仅管理员可见) -->
     <div v-if="activeTab === 'admin'" class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
       <div class="p-4 border-b border-gray-200 flex flex-wrap items-center gap-3">
         <button @click="loadAdminLogs" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 whitespace-nowrap">刷新</button>
@@ -105,7 +105,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useAuth } from '@/store/auth'
+
+const { isAdmin } = useAuth()
 
 const activeTab = ref('api')
 const loading = ref(false)
@@ -115,11 +118,16 @@ const adminLogs = ref([])
 const apiSearch = ref('')
 const ipCache = ref({})
 
+// 根据角色显示不同的标签页
 const tabs = [
-  { key: 'api', name: '📡 API 日志' },
-  { key: 'login', name: '🔑 登录日志' },
-  { key: 'admin', name: '📋 操作日志' },
+  { key: 'api', name: '📡 API 日志', adminOnly: false },
+  { key: 'login', name: '🔑 登录日志', adminOnly: false },
+  { key: 'admin', name: '📋 操作日志', adminOnly: true },
 ]
+
+const visibleTabs = computed(() => {
+  return tabs.filter(tab => !tab.adminOnly || isAdmin.value)
+})
 
 function fq(v) {
   if (v === null || v === undefined || v === 0) return '0'
@@ -133,11 +141,41 @@ function fq(v) {
 
 function fmtTime(t) {
   if (!t) return '-'
+  // 后端返回的是秒级 Unix 时间戳，JS Date 需要毫秒级
+  if (t < 9999999999) t = t * 1000
   return new Date(t).toLocaleString('zh-CN')
 }
 
 function typeLabel(t) {
   return { 1: 'API 调用', 2: '管理操作', 3: '系统事件' }[t] || t || '-'
+}
+
+function formatDevice(ua) {
+  if (!ua) return '-'
+  const browsers = [
+    [/Edg\//, 'Edge'],
+    [/Chrome\//, 'Chrome'],
+    [/Firefox\//, 'Firefox'],
+    [/Safari\//, 'Safari'],
+    [/MSIE|Trident\//, 'IE'],
+  ]
+  let browser = 'Unknown'
+  for (const [re, name] of browsers) {
+    if (re.test(ua)) { browser = name; break }
+  }
+  const devices = [
+    [/iPhone/, 'iPhone'],
+    [/iPad/, 'iPad'],
+    [/Android/, 'Android'],
+    [/Windows/, 'Windows'],
+    [/Macintosh|Mac OS X/, 'macOS'],
+    [/Linux/, 'Linux'],
+  ]
+  let device = 'Unknown'
+  for (const [re, name] of devices) {
+    if (re.test(ua)) { device = name; break }
+  }
+  return `${device} / ${browser}`
 }
 
 function getLocation(ip) {
@@ -159,7 +197,9 @@ async function loadApiLogs() {
   loading.value = true
   try {
     const token = sessionStorage.getItem('access_token')
-    const res = await fetch(`/api/logs?page=1&per_page=50&search=${apiSearch.value}`, {
+    // 普通用户使用 /api/log/self 查看自己的日志，管理员使用 /api/logs 查看全部
+    const endpoint = isAdmin.value ? '/api/logs' : '/api/log/self'
+    const res = await fetch(`${endpoint}?page=1&per_page=50&search=${apiSearch.value}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
@@ -172,13 +212,18 @@ async function loadLoginLogs() {
   loading.value = true
   try {
     const token = sessionStorage.getItem('access_token')
+    // 登录日志仅管理员可查看
+    if (!isAdmin.value) {
+      loginLogs.value = []
+      loading.value = false
+      return
+    }
     const res = await fetch('/api/login-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
     if (json.success) {
       loginLogs.value = json.data?.rows || json.data?.items || json.data || []
-      // 批量解析 IP
       await resolveIPs()
     }
   } catch (e) { console.error(e) }
@@ -204,7 +249,7 @@ async function resolveIPs() {
     })
     const json = await res.json()
     if (json.success) {
-      Object.assign(ipCache.value, json.data)
+      ipCache.value = { ...ipCache.value, ...json.data }
     }
   } catch (e) { console.error('IP resolve failed:', e) }
 }
@@ -212,6 +257,12 @@ async function resolveIPs() {
 async function loadAdminLogs() {
   loading.value = true
   try {
+    // 操作日志仅管理员可查看
+    if (!isAdmin.value) {
+      adminLogs.value = []
+      loading.value = false
+      return
+    }
     const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/admin-logs?page=1&per_page=50', {
       headers: { 'Authorization': `Bearer ${token}` }

@@ -51,12 +51,13 @@
             <p class="text-sm font-medium text-gray-900">{{ currentUser?.username }}</p>
             <p class="text-xs text-gray-500">{{ roleLabel }}</p>
           </div>
-          <button
-            class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
-            @click="goToProfile"
+          <router-link
+            to="/dashboard/profile"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            @click="dropdownOpen = false"
           >
             个人资料
-          </button>
+          </router-link>
           <button
             class="block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
             @click="handleLogout"
@@ -99,11 +100,6 @@ const roleLabel = computed(() => {
 
 const pageTitle = computed(() => route.meta?.title || 'PeaseAI')
 
-function goToProfile() {
-  dropdownOpen.value = false
-  router.push('/dashboard/settings')
-}
-
 async function handleLogout() {
   dropdownOpen.value = false
   try {
@@ -115,7 +111,6 @@ async function handleLogout() {
   router.push('/login')
 }
 
-// Close dropdown on outside click
 function handleClickOutside(event) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     dropdownOpen.value = false

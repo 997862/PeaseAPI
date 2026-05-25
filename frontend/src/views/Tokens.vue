@@ -31,17 +31,17 @@
           <tr v-for="t in tokens" :key="t.id" class="hover:bg-gray-50">
             <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ t.name || '-' }}</td>
             <td class="px-4 py-3 text-sm">
-              <code class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ maskToken(t.key) }}</code>
+              <code class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ t.key }}</code>
               <button @click="copyToken(t.key)" class="ml-2 text-xs text-primary-600 hover:text-primary-500">复制</button>
             </td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ fq(t.quota) }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ fq(t.remain_quota) }}</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ fq(t.used_quota) }}</td>
             <td class="px-4 py-3 text-sm">
               <span :class="`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${t.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`">
                 {{ t.status === 1 ? '启用' : '禁用' }}
               </span>
             </td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ t.expired_time || '永不过期' }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ formatExpiredTime(t.expired_time) }}</td>
             <td class="px-4 py-3 text-right text-sm">
               <button @click="editToken(t)" class="text-primary-600 hover:text-primary-500 mr-3">编辑</button>
               <button @click="deleteToken(t.id)" class="text-red-600 hover:text-red-500">删除</button>
@@ -89,7 +89,7 @@ const form = ref({ name: '', quota: -1, expired_time: '' })
 
 function fq(v) {
   if (v === null || v === undefined) return '0'
-  if (v === -1) return '无限制'
+  if (v === -1 || v === 0) return '无限制'
   const n = Number(v)
   if (isNaN(n)) return '0'
   if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B'
@@ -98,9 +98,14 @@ function fq(v) {
   return n.toFixed(2)
 }
 
-function maskToken(key) {
-  if (!key) return ''
-  return key.substring(0, 8) + '...' + key.substring(key.length - 4)
+function formatExpiredTime(t) {
+  if (!t || t === 0) return '永不过期'
+  // 后端返回的是秒级 Unix 时间戳
+  const ts = t < 9999999999 ? t * 1000 : t
+  return new Date(ts).toLocaleString('zh-CN', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false
+  })
 }
 
 function copyToken(key) {
@@ -114,14 +119,18 @@ async function loadTokens() {
     const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/token/self', { headers: { 'Authorization': `Bearer ${token}` } })
     const json = await res.json()
-    if (json.success) tokens.value = json.data?.items || json.data || []
+    if (json.success) {
+      // 后端返回格式：{ success: true, data: { rows: [...], count: N } }
+      const data = json.data
+      tokens.value = data?.rows || data?.items || (Array.isArray(data) ? data : []) || []
+    }
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
 
 function editToken(t) {
   editingToken.value = t
-  form.value = { name: t.name || '', quota: t.quota, expired_time: t.expired_time || '' }
+  form.value = { name: t.name || '', quota: t.remain_quota || -1, expired_time: t.expired_time || '' }
 }
 
 function closeModal() {
@@ -135,10 +144,20 @@ async function saveToken() {
     const token = sessionStorage.getItem('access_token')
     const url = editingToken.value ? `/api/token/self/${editingToken.value.id}` : '/api/token/self'
     const method = editingToken.value ? 'PUT' : 'POST'
+    
+    const body = {
+      name: form.value.name,
+      remain_quota: form.value.quota,
+      unlimited_quota: form.value.quota === -1,
+    }
+    if (form.value.expired_time) {
+      body.expired_time = Math.floor(new Date(form.value.expired_time).getTime() / 1000)
+    }
+    
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify(form.value)
+      body: JSON.stringify(body)
     })
     const json = await res.json()
     if (json.success) {

@@ -107,7 +107,7 @@ class OAuthController
         $redirectUri = Option::get('QQRedirectUri', 'https://' . rtrim($_SERVER['HTTP_HOST'], '/') . '/api/oauth/qq/callback');
         
         $client = new \GuzzleHttp\Client();
-        $response = $client->get("https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=$clientId&client_secret=$clientSecret&code=$code&redirect_uri=$redirectUri");
+        $response = $client->get("https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=$clientId&client_secret=$clientSecret&code=$code&redirect_uri=" . urlencode($redirectUri));
         parse_str((string) $response->getBody(), $data);
         $accessToken = $data['access_token'] ?? '';
         if (empty($accessToken)) return Response::error('Failed to get QQ token');
@@ -133,7 +133,7 @@ class OAuthController
             $state = bin2hex(random_bytes(16));
             session_start();
             $_SESSION['oauth_state'] = $state;
-            $url = "https://open.weixin.qq.com/connect/qrconnect?appid=$clientId&redirect_uri=$redirectUri&state=$state&response_type=code&scope=snsapi_login";
+            $url = "https://open.weixin.qq.com/connect/qrconnect?appid=$clientId&redirect_uri=" . urlencode($redirectUri) . "&state=$state&response_type=code&scope=snsapi_login";
             return Response::json(['url' => $url]);
         }
         return $this->handleWechatCallback($code, $request);
@@ -192,11 +192,14 @@ class OAuthController
         $_SESSION['username'] = $user->username;
         $_SESSION['role'] = $user->role;
         
+        $token = $user->setAccessToken();
+        
         return Response::success([
             'id' => $user->id,
             'username' => $user->username,
             'display_name' => $user->display_name,
             'role' => $user->role,
+            'access_token' => $token,
         ], 'Login successful');
     }
 

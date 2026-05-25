@@ -28,9 +28,9 @@ class LoginLogController
         $stmt = $db->query("SELECT COUNT(*) FROM login_logs");
         $total = (int) $stmt->fetchColumn();
         
-        // Get logs
+        // Get logs - added user_agent, user_agent, login_type
         $stmt = $db->query("
-            SELECT id, user_id, username, login_ip as ip, login_time as created_at, status 
+            SELECT id, user_id, username, login_ip as ip, user_agent, login_type, login_time, status 
             FROM login_logs 
             ORDER BY login_time DESC 
             LIMIT $perPage OFFSET $offset

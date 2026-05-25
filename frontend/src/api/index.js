@@ -33,7 +33,10 @@ api.interceptors.response.use(
       if (status === 401) {
         sessionStorage.removeItem('access_token')
         sessionStorage.removeItem('user')
-        window.location.href = import.meta.env.BASE_URL + 'login'
+        // Don't redirect if already on login page
+        if (!window.location.pathname.includes('/login')) {
+          window.location.href = import.meta.env.BASE_URL + 'login'
+        }
         return Promise.reject(new Error('登录已过期，请重新登录'))
       }
       if (status === 403) {
@@ -110,21 +113,26 @@ export const tokenAPI = {
   delete: (id) => api.delete(`/api/token/${id}`),
   batchDelete: (data) => api.post('/api/token/batch', data),
   batchUpdateStatus: (data) => api.post('/api/token/batch/status', data),
+  // User's own tokens
+  getSelf: (params) => api.get('/api/token/self', { params }),
+  createSelf: (data) => api.post('/api/token/self', data),
+  deleteSelf: (id) => api.delete(`/api/token/self/${id}`),
 }
 
 // ==========================================
 // Log APIs
 // ==========================================
 export const logAPI = {
+  // Admin: all logs
   list: (params) => api.get('/api/logs', { params }),
   stat: (params) => api.get('/api/log/stat', { params }),
   search: (params) => api.get('/api/log/search', { params }),
-  // API call logs
-  getCalls: (params) => api.get('/api/logs/calls', { params }),
-  // Login logs
-  getLogin: (params) => api.get('/api/logs/login', { params }),
-  // Admin operation logs
-  getAdmin: (params) => api.get('/api/logs/admin', { params }),
+  // User: own logs
+  getSelf: (params) => api.get('/api/log/self', { params }),
+  // Login logs (admin only)
+  getLogin: (params) => api.get('/api/login-logs', { params }),
+  // Admin operation logs (admin only)
+  getAdmin: (params) => api.get('/api/admin-logs', { params }),
 }
 
 // ==========================================

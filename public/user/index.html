@@ -207,7 +207,7 @@ createApp({
                 if (r.data.success) {
                     sessionStorage.setItem('access_token', r.data.data.token);
                     this.msg('登录成功，正在跳转...');
-                    setTimeout(() => { window.location.href = '/user/'; }, 800);
+                    setTimeout(() => { window.location.href = '/dashboard'; }, 800);
                 }
             } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
             this.loading = false;
@@ -221,7 +221,7 @@ createApp({
                 if (r.data.success) {
                     sessionStorage.setItem('access_token', r.data.data.token);
                     this.msg('登录成功，正在跳转...');
-                    setTimeout(() => { window.location.href = '/user/'; }, 800);
+                    setTimeout(() => { window.location.href = '/dashboard'; }, 800);
                 }
             } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
             this.loading = false;

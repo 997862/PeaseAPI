@@ -205,7 +205,15 @@ createApp({
             try {
                 const r = await api.post('/auth/public-login', { username: this.lf.username, password: this.lf.password });
                 if (r.data.success) {
-                    sessionStorage.setItem('access_token', r.data.data.token);
+                    sessionStorage.setItem('access_token', r.data.data.access_token);
+                    // 存储用户数据到 sessionStorage
+                    sessionStorage.setItem('user', JSON.stringify({
+                        id: r.data.data.id,
+                        username: r.data.data.username,
+                        email: r.data.data.email || '',
+                        phone: r.data.data.phone || '',
+                        role: r.data.data.role,
+                    }));
                     this.msg('登录成功，正在跳转...');
                     setTimeout(() => { window.location.href = '/dashboard'; }, 800);
                 }
@@ -219,7 +227,15 @@ createApp({
             try {
                 const r = await api.post('/user/sms-login', { phone: this.sf.phone, code: this.sf.code });
                 if (r.data.success) {
-                    sessionStorage.setItem('access_token', r.data.data.token);
+                    sessionStorage.setItem('access_token', r.data.data.access_token);
+                    // 存储用户数据到 sessionStorage
+                    sessionStorage.setItem('user', JSON.stringify({
+                        id: r.data.data.id,
+                        username: r.data.data.username,
+                        email: r.data.data.email || '',
+                        phone: r.data.data.phone || '',
+                        role: r.data.data.role,
+                    }));
                     this.msg('登录成功，正在跳转...');
                     setTimeout(() => { window.location.href = '/dashboard'; }, 800);
                 }

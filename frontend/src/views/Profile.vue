@@ -23,10 +23,16 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
             <div class="flex gap-2">
-              <input v-model="profile.phone" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="13800138000" />
-              <button @click="bindPhone" :disabled="saving" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50 whitespace-nowrap">
-                {{ profile.phone ? '修改' : '绑定' }}
+              <input v-model="profile.phone" class="block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" :placeholder="profile.phone ? '' : '绑定手机号'" />
+              <button v-if="!phoneCodeSent" @click="sendPhoneCode" :disabled="saving || !isValidPhone" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50 whitespace-nowrap">
+                获取验证码
               </button>
+              <button v-else @click="bindPhone" :disabled="saving || !phoneCode" class="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-500 disabled:opacity-50 whitespace-nowrap">
+                {{ phoneCountdown > 0 ? phoneCountdown + 's' : '确认绑定' }}
+              </button>
+            </div>
+            <div v-if="phoneCodeSent" class="mt-2">
+              <input v-model="phoneCode" type="text" maxlength="6" class="block w-32 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none" placeholder="6位验证码" />
             </div>
           </div>
           <div>
@@ -197,6 +203,14 @@ const oauthStatus = reactive({
 
 const apiKeys = ref([])
 
+// 手机号绑定相关
+const phoneCodeSent = ref(false)
+const phoneCode = ref('')
+const phoneCountdown = ref(0)
+let phoneTimer = null
+
+const isValidPhone = computed(() => /^1[3-9]\d{9}$/.test(profile.phone))
+
 const roleLabel = computed(() => {
   const role = currentUser.value?.role
   if (role === 100) return 'Root 管理员'
@@ -204,15 +218,34 @@ const roleLabel = computed(() => {
   return '普通用户'
 })
 
-onMounted(() => {
-  if (currentUser.value) {
-    profile.username = currentUser.value.username || ''
-    profile.email = currentUser.value.email || ''
-    profile.phone = currentUser.value.phone || ''
-  }
+onMounted(async () => {
+  // 从 API 加载完整用户信息
+  await loadUserProfile()
   loadApiKeys()
   loadOAuthStatus()
 })
+
+async function loadUserProfile() {
+  try {
+    const token = sessionStorage.getItem('access_token')
+    const res = await fetch('/api/user/self', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const json = await res.json()
+    if (json.success && json.data) {
+      profile.username = json.data.username || ''
+      profile.email = json.data.email || ''
+      profile.phone = json.data.phone || ''
+      // 更新 auth store 中的用户信息
+      setUser({
+        ...currentUser.value,
+        ...json.data,
+      })
+    }
+  } catch (e) {
+    console.error('Failed to load user profile:', e)
+  }
+}
 
 async function saveProfile() {
   saving.value = true
@@ -242,33 +275,91 @@ async function saveProfile() {
   }
 }
 
-async function bindPhone() {
-  const phone = profile.phone.trim()
-  if (!phone) {
-    alert('请输入手机号')
-    return
-  }
-  if (!/^1[3-9]\d{9}$/.test(phone)) {
+async function sendPhoneCode() {
+  if (!isValidPhone.value) {
     alert('请输入正确的手机号')
     return
   }
   saving.value = true
   try {
     const token = sessionStorage.getItem('access_token')
-    const res = await fetch('/api/user/self', {
-      method: 'PUT',
+    const res = await fetch('/api/sms/send-code', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ phone })
+      body: JSON.stringify({
+        phone: profile.phone,
+        type: 'bind'
+      })
     })
     const json = await res.json()
     if (json.success) {
-      setUser({ ...currentUser.value, phone })
-      alert(profile.phone ? '手机号修改成功！' : '手机号绑定成功！')
+      phoneCodeSent.value = true
+      phoneCountdown.value = 60
+      phoneTimer = setInterval(() => {
+        phoneCountdown.value--
+        if (phoneCountdown.value <= 0) {
+          clearInterval(phoneTimer)
+          phoneTimer = null
+        }
+      }, 1000)
+      alert('验证码已发送')
     } else {
-      alert('绑定失败: ' + (json.message || '未知错误'))
+      alert('发送失败: ' + (json.message || '未知错误'))
+    }
+  } catch (e) {
+    alert('网络错误: ' + e.message)
+  } finally {
+    saving.value = false
+  }
+}
+
+async function bindPhone() {
+  if (!phoneCode.value || phoneCode.value.length !== 6) {
+    alert('请输入6位验证码')
+    return
+  }
+  saving.value = true
+  try {
+    const token = sessionStorage.getItem('access_token')
+    // 先验证验证码
+    const verifyRes = await fetch('/api/sms/verify-code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        phone: profile.phone,
+        code: phoneCode.value,
+        type: 'bind'
+      })
+    })
+    const verifyJson = await verifyRes.json()
+    if (verifyJson.success) {
+      // 验证码正确，绑定手机号
+      const res = await fetch('/api/user/self', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ phone: profile.phone })
+      })
+      const json = await res.json()
+      if (json.success) {
+        setUser({ ...currentUser.value, phone: profile.phone })
+        alert('手机号绑定成功！')
+        phoneCodeSent.value = false
+        phoneCode.value = ''
+        phoneCountdown.value = 0
+      } else {
+        alert('绑定失败: ' + (json.message || '未知错误'))
+      }
+    } else {
+      alert('验证码错误: ' + (verifyJson.message || '未知错误'))
     }
   } catch (e) {
     alert('网络错误: ' + e.message)
@@ -279,17 +370,13 @@ async function bindPhone() {
 
 function bindOAuth(provider) {
   if (oauthStatus[provider]) {
-    // TODO: 解绑功能
     alert('解绑功能开发中')
     return
   }
-  // 跳转到 OAuth 授权页面
   window.location.href = `/api/oauth/${provider}`
 }
 
 async function loadOAuthStatus() {
-  // 从用户信息中获取 OAuth 绑定状态
-  // TODO: 后端需要返回 OAuth 绑定信息
   try {
     const token = sessionStorage.getItem('access_token')
     const res = await fetch('/api/user/self', {
@@ -297,7 +384,6 @@ async function loadOAuthStatus() {
     })
     const json = await res.json()
     if (json.success && json.data) {
-      // 假设后端返回 oauth_providers 字段
       const providers = json.data.oauth_providers || []
       oauthStatus.github = providers.includes('github')
       oauthStatus.google = providers.includes('google')

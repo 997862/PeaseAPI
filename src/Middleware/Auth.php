@@ -18,6 +18,11 @@ class Auth
             if ($userId === null) {
                 $authHeader = $request->getHeader('Authorization');
                 if ($authHeader) {
+                    // 移除 "Bearer " 前缀
+                    if (str_starts_with($authHeader, 'Bearer ')) {
+                        $authHeader = substr($authHeader, 7);
+                    }
+                    
                     $token = Token::getByKey($authHeader);
                     if ($token) {
                         // IP 限制检查
@@ -68,6 +73,10 @@ class Auth
             } else {
                 $authHeader = $request->getHeader('Authorization');
                 if ($authHeader) {
+                    // 移除 "Bearer " 前缀
+                    if (str_starts_with($authHeader, 'Bearer ')) {
+                        $authHeader = substr($authHeader, 7);
+                    }
                     // 系统令牌检查
                     $systemToken = \NewApi\Models\SystemToken::validate($authHeader);
                     if ($systemToken && $systemToken->role >= ROLE_ADMIN_USER) {

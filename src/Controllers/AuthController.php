@@ -94,9 +94,12 @@ class AuthController
             'id' => $user->id,
             'username' => $user->username,
             'display_name' => $user->display_name,
+            'email' => $user->email ?? '',
+            'phone' => $user->phone ?? '',
             'role' => $user->role,
             'status' => $user->status,
             'email' => $user->email,
+            'phone' => $user->phone ?? '',
             'quota' => $user->quota,
         ], 'Login successful');
     }
@@ -269,9 +272,12 @@ class AuthController
             'id' => $user->id,
             'username' => $user->username,
             'display_name' => $user->display_name,
+            'email' => $user->email ?? '',
+            'phone' => $user->phone ?? '',
             'role' => $user->role,
             'status' => $user->status,
             'email' => $user->email,
+            'phone' => $user->phone ?? '',
             'quota' => $user->quota,
             'used_quota' => $user->used_quota,
             'request_count' => $user->request_count,
@@ -393,6 +399,8 @@ class AuthController
             'access_token' => $token,
             'id' => $user->id,
             'username' => $user->username,
+            'email' => $user->email ?? '',
+            'phone' => $user->phone ?? '',
             'role' => $user->role,
         ], '登录成功');
     }

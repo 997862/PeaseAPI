@@ -132,4 +132,37 @@ class SystemController
             'content' => Option::get('PrivacyPolicy', ''),
         ]);
     }
+
+    public function getIpLocation(Request $request): Response
+    {
+        $ips = $request->input('ips', []);
+        if (empty($ips)) {
+            return Response::error('IP list is required');
+        }
+
+        $locations = [];
+        foreach ($ips as $ip) {
+            // 使用淘宝 IP 库（免费，无需 key）
+            $url = "https://ip.taobao.com/outGetIpInfo?ip=" . urlencode($ip) . "&accessKey=alibaba-inc";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $response = curl_exec($ch);
+            curl_close($ch);
+
+            $data = json_decode($response, true);
+            if ($data && $data['code'] == 0 && isset($data['data'])) {
+                $d = $data['data'];
+                $location = ($d['country'] ?? '') . ($d['region'] ?? '') . ($d['city'] ?? '');
+                $locations[$ip] = $location ?: $ip;
+            } else {
+                $locations[$ip] = $ip;
+            }
+        }
+
+        return Response::success($locations);
+    }
+
 }

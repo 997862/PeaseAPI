@@ -55,7 +55,7 @@ import { authAPI } from '@/api'
 
 const router = useRouter()
 const { setToken, setUser } = useAuth()
-const logoUrl = '/peaseapi-logo.png'
+const logoUrl = 'https://upload.o51.com/ico-svg/ico/favicon.png'
 
 const form = reactive({ username: '', password: '' })
 const loading = ref(false)

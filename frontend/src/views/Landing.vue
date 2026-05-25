@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-const logoUrl = '/peaseapi-logo.png'
+const logoUrl = 'https://upload.o51.com/ico-svg/ico/favicon.png'
 const logos = [
   { name: 'OpenAI', file: 'OpenAI.svg' },
   { name: 'Claude', file: 'Claude.svg' },

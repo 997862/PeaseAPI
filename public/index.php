@@ -240,5 +240,22 @@ $router->get('/api/metrics/trend', withAdminAuth(fn($req) => $metricsController-
 
 // Start the server
 // Public Auth API
+// SMS (public for sending/verifying codes)
 $router->post('/api/auth/public-login', fn($req) => $authController->publicLogin($req));
+
+// SMS (public for sending/verifying codes)
+$router->get('/api/sms/status', fn($req) => Response::success(['enabled' => \NewApi\Models\Option::getBool('SmsEnabled', false)]));
+$router->post('/api/sms/send-code', fn($req) => $smsController->sendCode($req));
+$router->post('/api/sms/verify-code', fn($req) => $smsController->verifyCode($req));
+
+// SMS config (admin only)
+$router->get('/api/sms/config', withAdminAuth(fn($req) => $smsController->getConfig($req)));
+$router->post('/api/sms/config', withAdminAuth(fn($req) => $smsController->saveConfig($req)));
+$router->post('/api/sms/test-send', withAdminAuth(fn($req) => $smsController->testSend($req)));
+
+// IP location (public)
+$router->post('/api/ip-location', fn($req) => $systemController->getIpLocation($req));
+
+
+// SMS config (admin only)
 $router->run();

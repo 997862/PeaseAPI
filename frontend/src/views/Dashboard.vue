@@ -159,11 +159,18 @@ const quickActions = computed(() => {
 async function loadLogs() {
   logsLoading.value = true
   try {
-    const res = await logAPI.list({ page: 1, per_page: 5, sort: '-created_at' })
-    if (res.success) {
-      recentLogs.value = res.data.items || []
+    const token = sessionStorage.getItem('access_token')
+    // 普通用户使用 /api/log/self，管理员使用 /api/logs
+    const endpoint = isAdmin.value ? '/api/logs' : '/api/log/self'
+    const res = await fetch(`${endpoint}?page=1&per_page=5&sort=-created_at`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+    const json = await res.json()
+    if (json.success) {
+      recentLogs.value = json.data?.items || json.data?.rows || []
     }
-  } catch {
+  } catch (e) {
+    console.error('Failed to load logs:', e)
     recentLogs.value = []
   } finally {
     logsLoading.value = false

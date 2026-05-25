@@ -54,7 +54,7 @@ import { useAuth } from '@/store/auth'
 
 const route = useRoute()
 const { currentUser, isAdmin } = useAuth()
-const logoUrl = '/peaseapi-logo.png'
+const logoUrl = 'https://upload.o51.com/ico-svg/ico/favicon.png'
 
 defineProps({ open: Boolean })
 defineEmits(['close'])

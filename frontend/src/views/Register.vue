@@ -58,7 +58,7 @@ import { useRouter } from 'vue-router'
 import { authAPI } from '@/api'
 
 const router = useRouter()
-const logoUrl = '/peaseapi-logo.png'
+const logoUrl = 'https://upload.o51.com/ico-svg/ico/favicon.png'
 
 const form = reactive({ username: '', email: '', password: '' })
 const loading = ref(false)

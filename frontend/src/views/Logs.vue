@@ -117,6 +117,7 @@ const loginLogs = ref([])
 const adminLogs = ref([])
 const apiSearch = ref('')
 const ipCache = ref({})
+const ipResolving = ref(new Set())
 
 // 根据角色显示不同的标签页
 const tabs = [
@@ -180,7 +181,35 @@ function formatDevice(ua) {
 
 function getLocation(ip) {
   if (!ip) return '-'
+  // 如果缓存中有，直接返回
+  if (ipCache.value[ip]) return ipCache.value[ip]
+  // 如果正在解析中，返回解析中状态
+  if (ipResolving.value.has(ip)) return '解析中...'
+  // 否则触发解析
+  resolveSingleIP(ip)
   return ip
+}
+
+async function resolveSingleIP(ip) {
+  if (!ip || ipCache.value[ip] || ipResolving.value.has(ip)) return
+  ipResolving.value.add(ip)
+  try {
+    const res = await fetch('/api/ip-location', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ip })
+    })
+    const json = await res.json()
+    if (json.success && json.data) {
+      ipCache.value[ip] = json.data.location || json.data.region || ip
+    } else {
+      ipCache.value[ip] = ip
+    }
+  } catch (e) {
+    ipCache.value[ip] = '解析失败'
+  } finally {
+    ipResolving.value.delete(ip)
+  }
 }
 
 async function switchTab(tab) {
@@ -209,27 +238,28 @@ async function loadLoginLogs() {
   loading.value = true
   try {
     const token = sessionStorage.getItem('access_token')
-    // 登录日志仅管理员可查看
-    if (!isAdmin.value) {
-      loginLogs.value = []
-      loading.value = false
-      return
-    }
-    const res = await fetch('/api/login-logs?page=1&per_page=50', {
+    // 管理员查看所有登录日志，普通用户查看自己的登录日志
+    const endpoint = isAdmin.value ? '/api/login-logs' : '/api/login-logs/self'
+    const res = await fetch(`${endpoint}?page=1&per_page=50`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
     const json = await res.json()
     if (json.success) {
       loginLogs.value = json.data?.rows || json.data?.items || json.data || []
-      // IP 直接显示
+      // 解析所有IP的地理位置
+      resolveIPs()
     }
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
 
 async function resolveIPs() {
-  // IP 解析功能已移除，直接显示 IP 地址
-  return
+  const ips = [...new Set(loginLogs.value.map(l => l.ip).filter(Boolean))]
+  for (const ip of ips) {
+    if (!ipCache.value[ip]) {
+      resolveSingleIP(ip)
+    }
+  }
 }
 
 async function loadAdminLogs() {

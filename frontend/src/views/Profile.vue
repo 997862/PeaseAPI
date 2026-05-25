@@ -257,7 +257,7 @@ async function saveProfile() {
     const res = await fetch('/api/user/self', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ email: profile.email })
+      body: JSON.stringify({ email: profile.email, phone: profile.phone })
     })
     const json = await res.json()
     if (json.success) {
@@ -320,6 +320,7 @@ async function bindPhone() {
       const json = await res.json()
       if (json.success) {
         setUser({ ...currentUser.value, phone: profile.phone })
+        await loadUserProfile()
         alert('手机号绑定成功！')
         phoneCodeSent.value = false; phoneCode.value = ''; phoneCountdown.value = 0
       } else {

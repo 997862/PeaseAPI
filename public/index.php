@@ -228,6 +228,9 @@ $router->post('/api/chat/send', withAuth(fn($req) => $chatController->sendMessag
 // OAuth
 $router->get('/api/oauth/github', fn($req) => $oAuthController->github($req));
 $router->get('/api/oauth/lark', fn($req) => $oAuthController->lark($req));
+$router->get('/api/oauth/google', fn($req) => $oAuthController->google($req));
+$router->get('/api/oauth/qq', fn($req) => $oAuthController->qq($req));
+$router->get('/api/oauth/wechat', fn($req) => $oAuthController->wechat($req));
 
 // Password Reset
 $router->post('/api/password/reset', fn($req) => $passwordController->reset($req));

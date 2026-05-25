@@ -180,10 +180,7 @@ function formatDevice(ua) {
 
 function getLocation(ip) {
   if (!ip) return '-'
-  if (ipCache.value[ip] !== undefined) {
-    return ipCache.value[ip] || '-'
-  }
-  return '解析中...'
+  return ip
 }
 
 async function switchTab(tab) {
@@ -224,34 +221,15 @@ async function loadLoginLogs() {
     const json = await res.json()
     if (json.success) {
       loginLogs.value = json.data?.rows || json.data?.items || json.data || []
-      await resolveIPs()
+      // IP 直接显示
     }
   } catch (e) { console.error(e) }
   finally { loading.value = false }
 }
 
 async function resolveIPs() {
-  const ips = [...new Set((loginLogs.value || []).map(l => l.login_ip || l.ip).filter(Boolean))]
-  if (ips.length === 0) return
-  
-  const uncached = ips.filter(ip => ipCache.value[ip] === undefined)
-  if (uncached.length === 0) return
-
-  try {
-    const token = sessionStorage.getItem('access_token')
-    const res = await fetch('/api/ip-location', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ ips: uncached })
-    })
-    const json = await res.json()
-    if (json.success) {
-      ipCache.value = { ...ipCache.value, ...json.data }
-    }
-  } catch (e) { console.error('IP resolve failed:', e) }
+  // IP 解析功能已移除，直接显示 IP 地址
+  return
 }
 
 async function loadAdminLogs() {

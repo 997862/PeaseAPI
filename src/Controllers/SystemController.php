@@ -136,8 +136,13 @@ class SystemController
     public function getIpLocation(Request $request): Response
     {
         $ips = $request->input('ips', []);
+        $singleIp = $request->input('ip');
+        if (!empty($singleIp)) {
+            $ips = [$singleIp];
+        }
+
         if (empty($ips)) {
-            return Response::error('IP list is required');
+            return Response::error('IP is required');
         }
 
         $locations = [];

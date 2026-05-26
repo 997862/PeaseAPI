@@ -15,8 +15,6 @@
         .bp { background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; border: none; cursor: pointer; }
         .bp:hover { background: linear-gradient(135deg, #4F46E5 0%, #4338CA 100%); }
         .bp:disabled { opacity: 0.5; cursor: not-allowed; }
-        .bs { background: #F3F4F6; color: #374151; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 500; border: none; cursor: pointer; }
-        .bs:hover { background: #E5E7EB; }
         .inp { width: 100%; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; box-sizing: border-box; }
         .inp:focus { outline: none; border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
         .card { background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
@@ -26,13 +24,11 @@
         .te { border-left: 4px solid #EF4444; }
         .oauth-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 0.5rem; border: 1px solid #D1D5DB; background: white; cursor: pointer; transition: all 0.2s; }
         .oauth-btn:hover { border-color: #6366F1; background: #EEF2FF; transform: translateY(-2px); }
-        .tab { padding: 0.5rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; font-size: 0.9rem; transition: all 0.2s; }
-        .tab.act { background: #6366F1; color: white; }
-        .tab:not(.act) { color: #6B7280; }
-        .tab:not(.act):hover { color: #6366F1; background: #F3F4F6; }
+        .sms-toggle { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.85rem; color: #6366F1; user-select: none; }
+        .sms-toggle input { accent-color: #6366F1; }
     </style>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="https://upload.o51.com/ico-svg/ico/favicon.png">
+    <link rel="apple-touch-icon" href="https://upload.o51.com/ico-svg/ico/favicon.png">
     <meta name="theme-color" content="#6366F1">
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -46,7 +42,7 @@
                 </a>
                 <div class="flex items-center space-x-4">
                     <a href="/" class="text-gray-600 hover:text-indigo-600 transition">首页</a>
-                    <a href="/user/register.html" class="bp text-sm py-2 px-4">免费注册</a>
+                    <a href="/register" class="bp text-sm py-2 px-4">免费注册</a>
                 </div>
             </div>
         </div>
@@ -54,70 +50,55 @@
 
     <div class="min-h-screen flex items-center justify-center py-12 px-4">
         <div class="card w-full max-w-md p-8">
-            <!-- Tabs -->
-            <div class="flex justify-center mb-6 bg-gray-100 rounded-lg p-1">
-                <div class="tab" :class="{ act: loginMethod === 'account' }" @click="loginMethod = 'account'">账号登录</div>
-                <div class="tab" :class="{ act: loginMethod === 'sms' }" @click="loginMethod = 'sms'">手机号登录</div>
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">欢迎回来</h2>
+                <p class="text-gray-500 mt-2">登录您的 PeaseAPI 账号</p>
             </div>
 
-            <!-- Account Login -->
-            <div v-if="loginMethod === 'account'">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">欢迎回来</h2>
-                    <p class="text-gray-500 mt-2">登录您的 PeaseAPI 账号</p>
+            <form @submit.prevent="doLogin">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">用户名 / 邮箱 / 手机号</label>
+                    <input v-model="lf.identifier" type="text" class="inp" required autofocus
+                           :placeholder="useSms ? '请输入手机号' : '请输入用户名、邮箱或手机号'">
                 </div>
-                <form @submit.prevent="doLogin">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">用户名</label>
-                        <input v-model="lf.username" type="text" class="inp" required autofocus placeholder="请输入用户名">
+
+                <div v-if="!useSms" class="mb-4">
+                    <label class="block text-sm font-medium mb-2">密码</label>
+                    <input v-model="lf.password" type="password" class="inp" required placeholder="请输入密码">
+                </div>
+
+                <div v-if="useSms" class="mb-4">
+                    <label class="block text-sm font-medium mb-2">验证码</label>
+                    <div class="flex gap-3">
+                        <input v-model="lf.smsCode" type="text" class="inp flex-1" required placeholder="6位验证码" maxlength="6">
+                        <button type="button" @click="sendSms" :disabled="smsCountdown > 0 || !isPhoneIdentifer" class="bp whitespace-nowrap px-4 text-sm">
+                            <span v-if="smsCountdown > 0">{{ smsCountdown }}s</span>
+                            <span v-else>获取验证码</span>
+                        </button>
                     </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">密码</label>
-                        <input v-model="lf.password" type="password" class="inp" required placeholder="请输入密码">
-                    </div>
-                    <div class="flex justify-between items-center mb-6">
-                        <label class="flex items-center text-sm text-gray-600">
-                            <input type="checkbox" v-model="lf.remember" class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            记住我
+                </div>
+
+                <div class="flex justify-between items-center mb-6">
+                    <label v-if="!useSms" class="flex items-center text-sm text-gray-600">
+                        <input type="checkbox" v-model="lf.remember" class="mr-2 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        记住我
+                    </label>
+                    <label v-else class="inline-block text-sm text-gray-600">&nbsp;</label>
+                    <div class="flex items-center gap-4">
+                        <label class="sms-toggle">
+                            <input type="checkbox" v-model="useSms" @change="lf.smsCode = ''">
+                            验证码登录
                         </label>
-                        <a href="javascript:void(0)" class="text-sm text-indigo-600 hover:underline">忘记密码？</a>
+                        <a v-if="!useSms" href="javascript:void(0)" class="text-sm text-indigo-600 hover:underline">忘记密码？</a>
                     </div>
-                    <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
-                        <span v-if="loading">登录中...</span>
-                        <span v-else>登录</span>
-                    </button>
-                </form>
-            </div>
-
-            <!-- SMS Login -->
-            <div v-if="loginMethod === 'sms'">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">手机快捷登录</h2>
-                    <p class="text-gray-500 mt-2">输入手机号获取验证码</p>
                 </div>
-                <form @submit.prevent="doSmsLogin">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium mb-2">手机号</label>
-                        <input v-model="sf.phone" type="text" class="inp" required placeholder="请输入11位手机号" maxlength="11">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium mb-2">验证码</label>
-                        <div class="flex gap-3">
-                            <input v-model="sf.code" type="text" class="inp flex-1" required placeholder="6位验证码" maxlength="6">
-                            <button type="button" @click="sendSms" :disabled="smsCountdown > 0 || !isValidPhone" class="bp whitespace-nowrap px-4">
-                                <span v-if="smsCountdown > 0">{{ smsCountdown }}s</span>
-                                <span v-else>获取验证码</span>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
-                        <span v-if="loading">登录中...</span>
-                        <span v-else>登录</span>
-                    </button>
-                </form>
-            </div>
 
-            <!-- OAuth -->
+                <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
+                    <span v-if="loading">登录中...</span>
+                    <span v-else>登录</span>
+                </button>
+            </form>
+
             <div class="mt-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
@@ -132,7 +113,7 @@
             </div>
 
             <div class="mt-6 text-center text-sm text-gray-500">
-                还没有账号？<a href="/user/register.html" class="text-indigo-600 hover:underline font-medium">免费注册</a>
+                还没有账号？<a href="/register" class="text-indigo-600 hover:underline font-medium">免费注册</a>
             </div>
         </div>
     </div>
@@ -149,9 +130,8 @@ const api = axios.create({ withCredentials: true, baseURL: '/api' });
 createApp({
     data() {
         return {
-            loginMethod: 'account',
-            lf: { username: '', password: '', remember: false },
-            sf: { phone: '', code: '' },
+            useSms: false,
+            lf: { identifier: '', password: '', smsCode: '', remember: false },
             loading: false,
             smsCountdown: 0,
             smsTimer: null,
@@ -160,8 +140,8 @@ createApp({
         }
     },
     computed: {
-        isValidPhone() {
-            return /^1[3-9]\d{9}$/.test(this.sf.phone);
+        isPhoneIdentifer() {
+            return /^1[3-9]\d{9}$/.test(this.lf.identifier);
         }
     },
     mounted() {
@@ -179,9 +159,9 @@ createApp({
             } catch(e) {}
         },
         async sendSms() {
-            if (!this.isValidPhone) { this.msg('请输入正确的手机号', 'error'); return; }
+            if (!this.isPhoneIdentifer) { this.msg('请输入正确的手机号', 'error'); return; }
             try {
-                const r = await api.post('/sms/send-code', { phone: this.sf.phone, type: 'login' });
+                const r = await api.post('/sms/send-code', { phone: this.lf.identifier, type: 'login' });
                 if (r.data.success) {
                     this.msg('验证码已发送');
                     this.smsCountdown = 60;
@@ -193,34 +173,24 @@ createApp({
             } catch (e) { this.msg(e.response?.data?.message || '发送失败', 'error'); }
         },
         async doLogin() {
+            if (this.useSms) {
+                if (!this.isPhoneIdentifer) { this.msg('验证码登录需要输入手机号', 'error'); return; }
+                if (!this.lf.smsCode) { this.msg('请输入验证码', 'error'); return; }
+            } else {
+                if (!this.lf.identifier) { this.msg('请输入用户名、邮箱或手机号', 'error'); return; }
+                if (!this.lf.password) { this.msg('请输入密码', 'error'); return; }
+            }
+
             this.loading = true;
             try {
-                const r = await api.post('/auth/public-login', { username: this.lf.username, password: this.lf.password });
-                if (r.data.success) {
-                    sessionStorage.setItem('access_token', r.data.data.access_token);
-                    // 存储用户数据到 sessionStorage
-                    sessionStorage.setItem('user', JSON.stringify({
-                        id: r.data.data.id,
-                        username: r.data.data.username,
-                        email: r.data.data.email || '',
-                        phone: r.data.data.phone || '',
-                        role: r.data.data.role,
-                    }));
-                    this.msg('登录成功，正在跳转...');
-                    setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+                let r;
+                if (this.useSms) {
+                    r = await api.post('/user/sms-login', { phone: this.lf.identifier, code: this.lf.smsCode });
+                } else {
+                    r = await api.post('/auth/public-login', { username: this.lf.identifier, password: this.lf.password });
                 }
-            } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
-            this.loading = false;
-        },
-        async doSmsLogin() {
-            if (!this.isValidPhone) { this.msg('请输入正确的手机号', 'error'); return; }
-            if (!this.sf.code) { this.msg('请输入验证码', 'error'); return; }
-            this.loading = true;
-            try {
-                const r = await api.post('/user/sms-login', { phone: this.sf.phone, code: this.sf.code });
                 if (r.data.success) {
                     sessionStorage.setItem('access_token', r.data.data.access_token);
-                    // 存储用户数据到 sessionStorage
                     sessionStorage.setItem('user', JSON.stringify({
                         id: r.data.data.id,
                         username: r.data.data.username,
@@ -229,7 +199,7 @@ createApp({
                         role: r.data.data.role,
                     }));
                     this.msg('登录成功，正在跳转...');
-                    setTimeout(() => { window.location.href = '/dashboard'; }, 800);
+                    setTimeout(() => { window.location.href = '/app/'; }, 800);
                 }
             } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
             this.loading = false;

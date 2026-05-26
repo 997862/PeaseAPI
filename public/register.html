@@ -26,8 +26,8 @@
         .phone-row .inp { flex: 1; }
         .phone-row .btn-sms { white-space: nowrap; padding: 0.75rem 1rem; }
     </style>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="https://upload.o51.com/ico-svg/ico/favicon.png">
+    <link rel="apple-touch-icon" href="https://upload.o51.com/ico-svg/ico/favicon.png">
     <meta name="theme-color" content="#6366F1">
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -36,7 +36,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <a href="/" class="flex items-center space-x-3">
-                    <img src="/logo-40.png" alt="PeaseAPI Logo" style="width:40px;height:40px;">
+                    <img src="https://upload.o51.com/ico-svg/ico/favicon.png" alt="PeaseAPI Logo" class="h-10 w-10 rounded-xl">
                     <span class="text-xl font-bold gradient-text">PeaseAPI</span>
                 </a>
                 <div class="flex items-center space-x-4">
@@ -55,8 +55,8 @@
             </div>
             <form @submit.prevent="doReg">
                 <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2">用户名</label>
-                    <input v-model="rf.username" type="text" class="inp" maxlength="20" required autofocus placeholder="3-20个字符，仅字母数字下划线">
+                    <label class="block text-sm font-medium mb-2">用户名 <span class="text-gray-400 text-xs">（3-20字符，仅字母数字下划线）</span></label>
+                    <input v-model="rf.username" type="text" class="inp" maxlength="20" required autofocus placeholder="请输入用户名">
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">密码</label>
@@ -67,7 +67,7 @@
                     <input v-model="rf.email" type="email" class="inp" required placeholder="用于登录和找回密码">
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm font-medium mb-2">手机号 <span class="text-gray-400 text-xs">（选填）</span></label>
+                    <label class="block text-sm font-medium mb-2">手机号 <span class="text-gray-400 text-xs">（选填，用于验证码登录）</span></label>
                     <div class="phone-row">
                         <input v-model="rf.phone" type="text" class="inp" placeholder="11位手机号" maxlength="11">
                         <button v-if="smsEnabled" type="button" @click="sendSms" :disabled="smsCountdown > 0 || !isValidPhone" class="bp btn-sms">
@@ -76,10 +76,10 @@
                         </button>
                     </div>
                     <div v-if="smsEnabled && rf.phone" class="mt-2">
-                        <input v-model="rf.smsCode" type="text" class="inp" placeholder="短信验证码" maxlength="6">
+                        <input v-model="rf.smsCode" type="text" class="inp" placeholder="短信验证码（可选）" maxlength="6">
                     </div>
                 </div>
-                <button type="submit" :disabled="loading" class="w-full bp py-3">
+                <button type="submit" :disabled="loading" class="w-full bp py-3 text-lg">
                     <span v-if="loading">注册中...</span>
                     <span v-else>注册</span>
                 </button>
@@ -153,12 +153,9 @@ createApp({
                 };
                 if (this.rf.phone) {
                     body.phone = this.rf.phone;
-                    if (this.smsEnabled && !this.rf.smsCode) {
-                        this.msg('请输入短信验证码', 'error');
-                        this.loading = false;
-                        return;
+                    if (this.smsEnabled && this.rf.smsCode) {
+                        body.sms_code = this.rf.smsCode;
                     }
-                    if (this.smsEnabled) body.sms_code = this.rf.smsCode;
                 }
                 const r = await api.post('/user/register', body);
                 if (r.data.success) {

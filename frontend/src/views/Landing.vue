@@ -42,7 +42,7 @@
         <p class="text-center text-sm font-medium text-gray-400 uppercase tracking-wider mb-8">支持的 AI 模型与渠道</p>
         <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-8">
           <div v-for="logo in logos" :key="logo.name" class="flex items-center justify-center w-20 h-20 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all p-3">
-            <img :src="'/assets/logos/' + logo.file" :alt="logo.name" class="w-full h-full object-contain" />
+            <img :src="'https://upload.o51.com/ico-svg/ai/' + logo.file" :alt="logo.name" class="w-full h-full object-contain" />
           </div>
         </div>
         <p class="text-center text-sm text-gray-400 mt-6">更多模型持续接入中...</p>

@@ -203,10 +203,10 @@ const oauthStatus = reactive({
 
 // OAuth 图标 URL
 const oauthIcons = {
-  github: 'https://upload.o51.com/ico-svg/ico/github.svg',
-  google: 'https://upload.o51.com/ico-svg/ico/google.svg',
-  qq: 'https://upload.o51.com/ico-svg/ico/qq.svg',
-  wechat: 'https://upload.o51.com/ico-svg/ico/weixin.svg',
+  github: 'https://upload.o51.com/ico-svg/ai/github.svg',
+  google: 'https://upload.o51.com/ico-svg/ai/google.svg',
+  qq: 'https://upload.o51.com/ico-svg/ai/qq.svg',
+  wechat: 'https://upload.o51.com/ico-svg/ai/weixin.svg',
 }
 
 const apiKeys = ref([])

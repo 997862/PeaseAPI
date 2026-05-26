@@ -1,4 +1,4 @@
-<img src="https://peaseapi.com/peaseapi-logo.png" alt="PeaseAPI Logo" width="64" height="64" />
+<img src="https://upload.o51.com/ico-svg/ico/favicon.png" alt="PeaseAPI Logo" width="64" height="64" />
 
 # PeaseAPI (豌豆API) — v3.0
 
@@ -14,9 +14,9 @@
 
 ## 📌 版本迭代历程
 
-PeaseAPI 自 2025 年启动以来，经历了三个重大版本的迭代，每一步都标志着产品能力的跨越式提升：
+PeaseAPI 自 2026 年启动以来，经历了三个重大版本的迭代，每一步都标志着产品能力的跨越式提升：
 
-### 🏗️ v1.0 — 奠基 (2025 Q1)
+### 🏗️ v1.0 — 奠基 (2026年 Q1)
 **目标：对标 New-API / One-API，打造完整 AI 网关基础架构**
 
 v1.0 全面吸收了 One-API 和 New-API 的核心设计理念，构建了稳固的 API 网关底座：
@@ -28,7 +28,7 @@ v1.0 全面吸收了 One-API 和 New-API 的核心设计理念，构建了稳固
 - ✅ GitHub OAuth 第三方登录
 - ✅ 响应式管理后台
 
-### 🎨 v2.0 — 进化 (2025 Q1 末)
+### 🎨 v2.0 — 进化 (2026年 Q1)
 **目标：UI/UX 全面优化，排查并修复架构缺陷**
 
 v2.0 对 v1.0 进行了全方位的打磨和优化：
@@ -45,7 +45,7 @@ v2.0 对 v1.0 进行了全方位的打磨和优化：
 - 🎁 邀请返利系统
 - 👑 角色权限体系（普通用户 / VIP / 管理员 / Root）
 
-### 🚀 v3.0 — 超越 (2025 Q2) ← **当前版本**
+### 🚀 v3.0 — 超越 (2026年 Q2) ← **当前版本**
 **目标：功能超越竞品，打造企业级 AI 网关旗舰**
 
 v3.0 在 v2.0 基础上大幅扩展，引入多项 One-API / New-API 均不具备的旗舰级功能：
@@ -338,7 +338,7 @@ MIT License
 ---
 
 <p align="center">
-  <img src="https://peaseapi.com/peaseapi-logo.png" alt="PeaseAPI" width="32" height="32" />
+  <img src="https://upload.o51.com/ico-svg/ico/favicon.png" alt="PeaseAPI" width="32" height="32" />
   <br />
   <strong>PeaseAPI Team</strong> · 持续进化，超越期待
 </p>

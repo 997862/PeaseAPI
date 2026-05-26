@@ -165,7 +165,7 @@
       <!-- GitHub -->
       <div class="border border-gray-200 rounded-lg p-4">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">🐙 GitHub</h3>
+          <h3 class="text-lg font-semibold text-gray-900"><img src="https://upload.o51.com/ico-svg/ico/github.svg" alt="GitHub" class="w-5 h-5 inline-block mr-1" /> GitHub</h3>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" v-model="config.GitHubOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             <span class="text-sm text-gray-700">启用 GitHub 登录</span>
@@ -183,7 +183,7 @@
       <!-- Google -->
       <div class="border border-gray-200 rounded-lg p-4">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">🔵 Google</h3>
+          <h3 class="text-lg font-semibold text-gray-900"><img src="https://upload.o51.com/ico-svg/ico/google.svg" alt="Google" class="w-5 h-5 inline-block mr-1" /> Google</h3>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" v-model="config.GoogleOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             <span class="text-sm text-gray-700">启用 Google 登录</span>
@@ -201,7 +201,7 @@
       <!-- QQ -->
       <div class="border border-gray-200 rounded-lg p-4">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">🐧 QQ</h3>
+          <h3 class="text-lg font-semibold text-gray-900"><img src="https://upload.o51.com/ico-svg/ico/qq.svg" alt="QQ" class="w-5 h-5 inline-block mr-1" /> QQ</h3>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" v-model="config.QQOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             <span class="text-sm text-gray-700">启用 QQ 登录</span>
@@ -219,7 +219,7 @@
       <!-- WeChat -->
       <div class="border border-gray-200 rounded-lg p-4">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="text-lg font-semibold text-gray-900">💬 微信</h3>
+          <h3 class="text-lg font-semibold text-gray-900"><img src="https://upload.o51.com/ico-svg/ico/weixin.svg" alt="微信" class="w-5 h-5 inline-block mr-1" /> 微信</h3>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" v-model="config.WechatOAuthEnabled" :true-value="'true'" :false-value="'false'" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" />
             <span class="text-sm text-gray-700">启用微信登录</span>

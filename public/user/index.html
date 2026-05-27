@@ -323,7 +323,7 @@ createApp({
                     } else {
                         this.msg('登录成功');
                         // Reload page so checkAuth() picks up the session and shows user center
-                        setTimeout(() => { location.reload(); }, 800);
+                        window.location.href = window.location.pathname + "#dashboard";
                     }
                 }
             } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
@@ -338,6 +338,8 @@ createApp({
                     if (u.role >= 10) { window.location.href = "/app/"; return; }
                     this.user = u;
                     this.view = "usercenter";
+                    const page = window.location.hash.replace("#", "") || "dashboard";
+                    this.ucPage = page;
                     this.loadDashboard();
                 } catch(e) { console.error("checkAuth error", e); this.doLogout(); }
             }

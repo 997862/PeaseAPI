@@ -29,8 +29,8 @@ class AuthController
         }
 
         // 后台登录权限拦截：仅允许角色 >= 2 (管理员/超管) 登录
-        if ($user->role < 2) {
-            return Response::error('后台仅限管理员登录，普通用户请前往用户中心', 403);
+        if ($user->role < 10) {
+            return Response::error('后台仅限管理员登录（role >= 10），普通用户请前往 /user/ 用户中心', 403);
         }
 
         if ($user->status !== USER_STATUS_ENABLED) {

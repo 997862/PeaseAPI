@@ -118,6 +118,118 @@
         </div>
     </div>
 
+    <!-- USER CENTER VIEW -->
+    <div v-if="view === 'usercenter'" class="min-h-screen bg-gray-50">
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-3">
+                        <img src="https://upload.o51.com/ico-svg/ico/favicon.png" class="h-10 w-10 rounded-xl">
+                        <span class="text-xl font-bold gradient-text">PeaseAPI 用户中心</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-600">欢迎，{{ user?.username }}</span>
+                        <button @click="doLogout" class="text-sm text-indigo-600 hover:text-indigo-500">退出</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex gap-6">
+                <aside class="w-44 flex-shrink-0 hidden md:block">
+                    <nav class="bg-white rounded-xl shadow-sm p-4 space-y-1">
+                        <a @click="ucPage='dashboard'" :class="['block rounded-lg px-3 py-2 text-sm font-medium cursor-pointer', ucPage==='dashboard' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50']">仪表盘</a>
+                        <a @click="ucPage='tokens'" :class="['block rounded-lg px-3 py-2 text-sm font-medium cursor-pointer', ucPage==='tokens' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50']">Token 管理</a>
+                        <a @click="ucPage='logs'" :class="['block rounded-lg px-3 py-2 text-sm font-medium cursor-pointer', ucPage==='logs' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50']">我的日志</a>
+                        <a @click="ucPage='profile'" :class="['block rounded-lg px-3 py-2 text-sm font-medium cursor-pointer', ucPage==='profile' ? 'bg-indigo-50 text-indigo-700' : 'text-gray-700 hover:bg-gray-50']">个人资料</a>
+                    </nav>
+                </aside>
+                <main class="flex-1">
+                    <div v-if="ucPage==='dashboard'" class="space-y-6">
+                        <div class="rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white shadow-lg">
+                            <h2 class="text-xl font-bold">欢迎回来，{{ user?.username }}！</h2>
+                            <p class="mt-1 text-indigo-100">这是你的用户中心</p>
+                            <div class="mt-4 flex flex-wrap gap-4">
+                                <div class="rounded-lg bg-white/10 px-4 py-2"><span class="text-xs text-indigo-200">当前配额</span><p class="text-lg font-bold">{{ formatQuota(user?.quota || 0) }}</p></div>
+                                <div class="rounded-lg bg-white/10 px-4 py-2"><span class="text-xs text-indigo-200">已用配额</span><p class="text-lg font-bold">{{ formatQuota(user?.used_quota || 0) }}</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="ucPage==='tokens'" class="space-y-6">
+                        <div class="flex items-center justify-between"><div><h2 class="text-xl font-bold text-gray-900">Token 管理</h2></div><button @click="showCreateToken=true" class="bp text-sm py-2 px-4">+ 创建 Token</button></div>
+                        <div class="rounded-xl bg-white shadow-sm overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">名称</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">额度</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th><th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th></tr></thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr v-if="tokensLoading"><td colspan="5" class="py-8 text-center text-gray-500">加载中...</td></tr>
+                                    <tr v-else-if="tokens.length===0"><td colspan="5" class="py-8 text-center text-gray-500">暂无 Token</td></tr>
+                                    <tr v-for="t in tokens" :key="t.id" class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm font-medium">{{ t.name || '-' }}</td>
+                                        <td class="px-4 py-3 text-sm"><code class="bg-gray-100 px-2 py-0.5 rounded text-xs">{{ maskToken(t.key) }}</code> <button @click="copyText(t.key)" class="text-xs text-indigo-600">复制</button></td>
+                                        <td class="px-4 py-3 text-sm text-gray-500">{{ formatQuota(t.remain_quota || 0) }}</td>
+                                        <td class="px-4 py-3 text-sm"><span :class="'px-2 py-0.5 text-xs rounded-full ' + (t.status===1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">{{ t.status===1 ? '启用' : '禁用' }}</span></td>
+                                        <td class="px-4 py-3 text-right text-sm"><button @click="deleteToken(t.id)" class="text-red-600 hover:text-red-500">删除</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div v-if="ucPage==='logs'" class="space-y-6">
+                        <div><h2 class="text-xl font-bold text-gray-900">我的日志</h2><p class="mt-1 text-sm text-gray-500">查看你的 API 调用记录</p></div>
+                        <div class="rounded-xl bg-white shadow-sm overflow-hidden">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">模型</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th><th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">配额</th></tr></thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr v-if="logsLoading"><td colspan="4" class="py-8 text-center text-gray-500">加载中...</td></tr>
+                                    <tr v-else-if="logs.length===0"><td colspan="4" class="py-8 text-center text-gray-500">暂无日志</td></tr>
+                                    <tr v-for="l in logs" :key="l.id" class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm text-gray-500">{{ formatTime(l.created_at) }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ l.model_name || '-' }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ l.total_tokens || 0 }}</td>
+                                        <td class="px-4 py-3 text-sm">{{ formatQuota(l.quota || 0) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div v-if="ucPage==='profile'" class="space-y-6">
+                        <div><h2 class="text-xl font-bold text-gray-900">个人资料</h2></div>
+                        <div class="rounded-xl bg-white shadow-sm p-6">
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div><label class="block text-sm font-medium mb-1">用户名</label><input v-model="profile.username" disabled class="inp bg-gray-50 text-gray-500" /></div>
+                                <div><label class="block text-sm font-medium mb-1">邮箱</label><input v-model="profile.email" class="inp" /></div>
+                            </div>
+                            <div class="flex justify-end mt-4"><button @click="saveProfile" class="bp">保存</button></div>
+                        </div>
+                        <div class="rounded-xl bg-white shadow-sm p-6">
+                            <h3 class="text-lg font-semibold mb-4">API Key</h3>
+                            <div class="flex items-center gap-3">
+                                <input :value="apiKey" readonly class="inp flex-1 bg-gray-50 font-mono text-sm" />
+                                <button @click="copyText(apiKey)" class="bp text-sm">复制</button>
+                                <button @click="generateApiKey" class="bp text-sm">生成新 Key</button>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Token Modal -->
+    <div v-if="showCreateToken" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" @click.self="showCreateToken=false">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold mb-4">创建 Token</h3>
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium mb-1">名称</label><input v-model="newToken.name" class="inp" placeholder="Token 名称" /></div>
+                <div><label class="block text-sm font-medium mb-1">额度</label><input v-model.number="newToken.quota" type="number" class="inp" placeholder="0 = 不限制" /></div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button @click="showCreateToken=false" class="rounded-lg border px-4 py-2 text-sm">取消</button>
+                <button @click="createToken" class="bp">创建</button>
+            </div>
+        </div>
+    </div>
+
     <div v-if="toast.show" class="toast" :class="toast.type==='success'?'ts':'te'">
         <p>{{ toast.message }}</p>
     </div>
@@ -130,6 +242,11 @@ const api = axios.create({ withCredentials: true, baseURL: '/api' });
 createApp({
     data() {
         return {
+            view: "login", user: null, ucPage: "dashboard",
+            tokens: [], tokensLoading: false, logs: [], logsLoading: false,
+            profile: { username: "", email: "", phone: "" }, profileSaving: false,
+            apiKey: "", keyGenerating: false,
+            showCreateToken: false, newToken: { name: "", quota: 0 }, tokenCreating: false,
             useSms: false,
             lf: { identifier: '', password: '', smsCode: '', remember: false },
             loading: false,
@@ -145,6 +262,7 @@ createApp({
         }
     },
     mounted() {
+        this.checkAuth();
         this.checkSmsStatus();
     },
     beforeUnmount() {
@@ -198,12 +316,45 @@ createApp({
                         phone: r.data.data.phone || '',
                         role: r.data.data.role,
                     }));
-                    this.msg('登录成功，正在跳转...');
-                    setTimeout(() => { window.location.href = '/app/'; }, 800);
+                    const role = r.data.data.role || 0;
+                    if (role >= 10) {
+                        this.msg('管理员登录，跳转后台...');
+                        setTimeout(() => { window.location.href = '/app/'; }, 800);
+                    } else {
+                        this.msg('登录成功');
+                        // Reload page so checkAuth() picks up the session and shows user center
+                        setTimeout(() => { location.reload(); }, 800);
+                    }
                 }
             } catch (e) { this.msg(e.response?.data?.message || '登录失败', 'error'); }
             this.loading = false;
         },
+        checkAuth() {
+            const token = sessionStorage.getItem("access_token");
+            const userStr = sessionStorage.getItem("user");
+            if (token && userStr) {
+                try {
+                    this.user = JSON.parse(userStr);
+                    if (this.user.role >= 10) { window.location.href = "/app/"; return; }
+                    this.view = "usercenter";
+                    this.loadDashboard();
+                } catch(e) { this.doLogout(); }
+            }
+        },
+        showUserCenter() { this.view = "usercenter"; this.loadDashboard(); },
+        doLogout() { sessionStorage.removeItem("access_token"); sessionStorage.removeItem("user"); this.user = null; this.view = "login"; },
+        async loadDashboard() { await this.loadTokens(); await this.loadLogs(); await this.loadProfile(); },
+        async loadTokens() { this.tokensLoading = true; try { const r = await api.get("/token/self?page=1&per_page=50"); if (r.data.success) this.tokens = r.data.data?.rows || r.data.data?.items || r.data.data || []; } catch(e) {} finally { this.tokensLoading = false; } },
+        async loadLogs() { this.logsLoading = true; try { const r = await api.get("/log/self?page=1&per_page=50"); if (r.data.success) this.logs = r.data.data?.rows || r.data.data?.items || r.data.data || []; } catch(e) {} finally { this.logsLoading = false; } },
+        async loadProfile() { try { const r = await api.get("/user/self"); if (r.data.success) { this.profile = { username: r.data.data.username, email: r.data.data.email || "", phone: r.data.data.phone || "" }; this.apiKey = r.data.data.access_token || ""; } } catch(e) {} },
+        async saveProfile() { try { const r = await api.put("/user/self", { email: this.profile.email, phone: this.profile.phone }); if (r.data.success) this.msg("保存成功"); else this.msg(r.data.message || "失败", "error"); } catch(e) { this.msg("失败", "error"); } },
+        async generateApiKey() { try { const r = await api.post("/user/generate_access_token"); if (r.data.success) { this.apiKey = r.data.data.access_token || r.data.data; this.msg("API Key 已生成"); } } catch(e) { this.msg("生成失败", "error"); } },
+        async createToken() { try { const r = await api.post("/token/self", { name: this.newToken.name, quota: this.newToken.quota }); if (r.data.success) { this.showCreateToken = false; this.newToken = { name: "", quota: 0 }; await this.loadTokens(); this.msg("Token 创建成功"); } else this.msg(r.data.message || "失败", "error"); } catch(e) { this.msg("失败", "error"); } },
+        async deleteToken(id) { if (!confirm("确定删除？")) return; try { const r = await api.delete("/token/self/" + id); if (r.data.success) { await this.loadTokens(); this.msg("已删除"); } else this.msg(r.data.message || "失败", "error"); } catch(e) { this.msg("失败", "error"); } },
+        copyText(key) { navigator.clipboard.writeText(key).then(() => this.msg("已复制")); },
+        maskToken(key) { if (!key) return "-"; return key.substring(0, 6) + "..." + key.substring(key.length - 4); },
+        formatQuota(v) { if (!v || v === 0) return "0"; const n = Number(v); if (isNaN(n)) return "0"; if (n >= 1e9) return (n / 1e9).toFixed(2) + "B"; if (n >= 1e6) return (n / 1e6).toFixed(2) + "M"; if (n >= 1e3) return (n / 1e3).toFixed(2) + "K"; return n.toFixed(2); },
+        formatTime(t) { if (!t) return "-"; if (t < 9999999999) t = t * 1000; return new Date(t).toLocaleString("zh-CN"); },
         oauthLogin(provider) {
             window.location.href = `/api/oauth/${provider}`;
         }

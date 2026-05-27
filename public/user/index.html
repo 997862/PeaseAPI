@@ -334,11 +334,12 @@ createApp({
             const userStr = sessionStorage.getItem("user");
             if (token && userStr) {
                 try {
-                    this.user = JSON.parse(userStr);
-                    if (this.user.role >= 10) { window.location.href = "/app/"; return; }
+                    const u = JSON.parse(userStr);
+                    if (u.role >= 10) { window.location.href = "/app/"; return; }
+                    this.user = u;
                     this.view = "usercenter";
                     this.loadDashboard();
-                } catch(e) { this.doLogout(); }
+                } catch(e) { console.error("checkAuth error", e); this.doLogout(); }
             }
         },
         showUserCenter() { this.view = "usercenter"; this.loadDashboard(); },
